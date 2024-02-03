@@ -1,4 +1,4 @@
-package fun.keepon.utils;
+package fun.keepon.utils.zk;
 
 import fun.keepon.constant.ZooKeeperConstant;
 import fun.keepon.exceptions.ZookeeperException;

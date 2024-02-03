@@ -1,7 +1,8 @@
 package fun.keepon;
 
-import fun.keepon.utils.ZkNode;
-import fun.keepon.utils.ZookeeperUtil;
+import fun.keepon.constant.ZooKeeperConstant;
+import fun.keepon.utils.zk.ZkNode;
+import fun.keepon.utils.zk.ZookeeperUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
@@ -17,8 +18,8 @@ public class Application {
     public static void main(String[] args) {
         CuratorFramework client = ZookeeperUtil.getClient();
 
-        String providerPath = "/providers";
-        String consumersPath = "/consumers";
+        String providerPath = ZooKeeperConstant.BASE_PROVIDERS_PATH;
+        String consumersPath = ZooKeeperConstant.BASE_CONSUMERS_PATH;
         ZkNode providersNode = new ZkNode(providerPath, null);
         ZkNode consumersNode = new ZkNode(consumersPath, null);
 

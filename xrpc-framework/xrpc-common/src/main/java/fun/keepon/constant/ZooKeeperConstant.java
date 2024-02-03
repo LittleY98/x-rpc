@@ -14,5 +14,10 @@ public class ZooKeeperConstant {
 
     public static final String DEFAULT_ZK_NAMESPACE = "xrpc-meta";
 
+    public static final String BASE_PROVIDERS_PATH = "/providers";
+
+    public static final String BASE_CONSUMERS_PATH = "/consumers";
+
+
 
 }

@@ -1,4 +1,4 @@
-package fun.keepon.utils;
+package fun.keepon.utils.zk;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

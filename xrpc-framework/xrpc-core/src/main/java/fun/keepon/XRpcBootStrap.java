@@ -1,8 +1,15 @@
 package fun.keepon;
 
+import fun.keepon.constant.ZooKeeperConstant;
+import fun.keepon.utils.NetUtils;
+import fun.keepon.utils.zk.ZkNode;
+import fun.keepon.utils.zk.ZookeeperUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.zookeeper.CreateMode;
 
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * @author LittleY
@@ -11,11 +18,20 @@ import java.util.List;
  */
 @Slf4j
 public class XRpcBootStrap {
-    private static XRpcBootStrap xRpcBootStrap = new XRpcBootStrap();
+    private static final XRpcBootStrap xRpcBootStrap = new XRpcBootStrap();
+
+    // 定义相关的基础配置
+    private String applicationName = "Default";
+
+    private RegistryConfig registryConfig;
+
+    private ProtocolConfig protocolConfig;
+
+    private CuratorFramework zookeeperClient;
+
+    private int port;
 
     private XRpcBootStrap() {
-        log.info("测试测试");
-
     }
 
     /**
@@ -32,6 +48,7 @@ public class XRpcBootStrap {
      * @return this
      */
     public XRpcBootStrap application(String appName){
+        this.applicationName = appName;
         return this;
     }
 
@@ -44,6 +61,10 @@ public class XRpcBootStrap {
     }
 
     public XRpcBootStrap registry(RegistryConfig registryConfig){
+        this.registryConfig =registryConfig;
+        zookeeperClient = ZookeeperUtil.getClient();
+        this.port = 8080;
+
         return this;
     }
 
@@ -58,6 +79,7 @@ public class XRpcBootStrap {
      */
     public XRpcBootStrap protocol(ProtocolConfig protocolConfig){
         log.debug("当前工具使用了 {} 协议进行序列化", protocolConfig);
+        this.protocolConfig = protocolConfig;
         return this;
     }
 
@@ -76,6 +98,12 @@ public class XRpcBootStrap {
      * @return this
      */
     public XRpcBootStrap publish(ServiceConfig<?> service){
+        String serviceNamePath = ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + service.getInterface().getName();
+        ZookeeperUtil.createNode(zookeeperClient, new ZkNode(serviceNamePath, null));
+
+        String nodePath = serviceNamePath + "/" + NetUtils.getLocalIP() + ":" + this.port;
+        ZookeeperUtil.createNode(zookeeperClient, new ZkNode(nodePath, null), CreateMode.EPHEMERAL);
+
         log.debug("服务： {}， 已经被注册", service.getInterface().getName());
         return this;
     }
