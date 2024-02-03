@@ -12,11 +12,11 @@
         <module>xrpc-framework</module>
         <module>xrpc-framework/xrpc-common</module>
         <module>xrpc-framework/xrpc-core</module>
-        <module>xrpc-manager</module>
         <module>xrpc-demo</module>
         <module>xrpc-demo/xrpc-consumer-demo</module>
         <module>xrpc-demo/xrpc-provider-demo</module>
         <module>xrpc-demo/xrpc-api</module>
+        <module>xrpc-framework/xrpc-manager</module>
     </modules>
 
     <properties>
@@ -30,6 +30,7 @@
         <fastjson2.version>2.0.42</fastjson2.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <lombok.version>1.18.30</lombok.version>
+        <zookeeper.version>3.9.1</zookeeper.version>
     </properties>
 
     <!--  父工程版本管理  -->
@@ -76,6 +77,13 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
