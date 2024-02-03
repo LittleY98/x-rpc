@@ -1,7 +1,7 @@
 package com.keepon;
 
 import fun.keepon.ReferenceConfig;
-import fun.keepon.RegistryConfig;
+import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.api.HelloXRpc;
 

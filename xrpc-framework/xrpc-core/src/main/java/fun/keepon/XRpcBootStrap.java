@@ -1,15 +1,11 @@
 package fun.keepon;
 
-import fun.keepon.constant.ZooKeeperConstant;
-import fun.keepon.utils.NetUtils;
-import fun.keepon.utils.zk.ZkNode;
-import fun.keepon.utils.zk.ZookeeperUtil;
+import fun.keepon.discovery.Registry;
+import fun.keepon.discovery.RegistryConfig;
+import fun.keepon.discovery.impl.ZookeeperRegistry;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.zookeeper.CreateMode;
 
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * @author LittleY
@@ -27,9 +23,9 @@ public class XRpcBootStrap {
 
     private ProtocolConfig protocolConfig;
 
-    private CuratorFramework zookeeperClient;
 
-    private int port;
+    // TODO 待处理
+    private Registry registry = new ZookeeperRegistry();
 
     private XRpcBootStrap() {
     }
@@ -62,8 +58,8 @@ public class XRpcBootStrap {
 
     public XRpcBootStrap registry(RegistryConfig registryConfig){
         this.registryConfig =registryConfig;
-        zookeeperClient = ZookeeperUtil.getClient();
-        this.port = 8080;
+
+        registry = registryConfig.getRegistry();
 
         return this;
     }
@@ -98,13 +94,7 @@ public class XRpcBootStrap {
      * @return this
      */
     public XRpcBootStrap publish(ServiceConfig<?> service){
-        String serviceNamePath = ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + service.getInterface().getName();
-        ZookeeperUtil.createNode(zookeeperClient, new ZkNode(serviceNamePath, null));
-
-        String nodePath = serviceNamePath + "/" + NetUtils.getLocalIP() + ":" + this.port;
-        ZookeeperUtil.createNode(zookeeperClient, new ZkNode(nodePath, null), CreateMode.EPHEMERAL);
-
-        log.debug("服务： {}， 已经被注册", service.getInterface().getName());
+        registry.register(service);
         return this;
     }
 
@@ -114,7 +104,10 @@ public class XRpcBootStrap {
      * @return this
      */
     public XRpcBootStrap publish(List<ServiceConfig<?>> services){
-        log.debug("服务： {}， 已经被注册", services);
+        for (ServiceConfig<?> service : services) {
+            registry.register(service);
+            log.debug("服务： {}， 已经被注册", service);
+        }
         return this;
     }
 

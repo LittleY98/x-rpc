@@ -10,8 +10,7 @@ import lombok.Setter;
  */
 public class ServiceConfig<T> {
     private Class<T> interfaceProvider;
-    @Setter
-    @Getter
+
     private Object ref;
 
     public Class<T> getInterface() {
@@ -22,4 +21,19 @@ public class ServiceConfig<T> {
         this.interfaceProvider = interfaceProvider;
     }
 
+    public Class<T> getInterfaceProvider() {
+        return interfaceProvider;
+    }
+
+    public void setInterfaceProvider(Class<T> interfaceProvider) {
+        this.interfaceProvider = interfaceProvider;
+    }
+
+    public Object getRef() {
+        return ref;
+    }
+
+    public void setRef(Object ref) {
+        this.ref = ref;
+    }
 }
