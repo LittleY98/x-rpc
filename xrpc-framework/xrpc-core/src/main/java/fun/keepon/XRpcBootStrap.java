@@ -23,7 +23,7 @@ public class XRpcBootStrap {
     // 定义相关的基础配置
     private String applicationName = "Default";
 
-    private RegistryConfig registryConfig;
+
 
     private ProtocolConfig protocolConfig;
 
@@ -54,14 +54,8 @@ public class XRpcBootStrap {
      * 配置注册中心
      * @return this
      */
-    public XRpcBootStrap registry(){
-        return this;
-    }
-
     public XRpcBootStrap registry(RegistryConfig registryConfig){
-        this.registryConfig =registryConfig;
         registry = registryConfig.getRegistry();
-
         return this;
     }
 
