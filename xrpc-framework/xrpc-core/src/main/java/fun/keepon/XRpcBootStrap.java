@@ -5,7 +5,9 @@ import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.discovery.impl.ZookeeperRegistry;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author LittleY
@@ -16,6 +18,8 @@ import java.util.List;
 public class XRpcBootStrap {
     private static final XRpcBootStrap xRpcBootStrap = new XRpcBootStrap();
 
+    private static final Map<String ,ServiceConfig<?>> SERVERS_MAP = new HashMap<>();
+
     // 定义相关的基础配置
     private String applicationName = "Default";
 
@@ -23,9 +27,7 @@ public class XRpcBootStrap {
 
     private ProtocolConfig protocolConfig;
 
-
-    // TODO 待处理
-    private Registry registry = new ZookeeperRegistry();
+    private Registry registry;
 
     private XRpcBootStrap() {
     }
@@ -58,7 +60,6 @@ public class XRpcBootStrap {
 
     public XRpcBootStrap registry(RegistryConfig registryConfig){
         this.registryConfig =registryConfig;
-
         registry = registryConfig.getRegistry();
 
         return this;
@@ -83,6 +84,14 @@ public class XRpcBootStrap {
      * 启动netty服务
      */
     public void start(){
+        while (true){
+            try {
+                Thread.sleep(1000);
+                log.debug("睡眠");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 
@@ -95,6 +104,8 @@ public class XRpcBootStrap {
      */
     public XRpcBootStrap publish(ServiceConfig<?> service){
         registry.register(service);
+        SERVERS_MAP.put(service.getInterface().getName(), service);
+        log.debug("服务： {}， 已经被注册", service);
         return this;
     }
 
@@ -105,8 +116,7 @@ public class XRpcBootStrap {
      */
     public XRpcBootStrap publish(List<ServiceConfig<?>> services){
         for (ServiceConfig<?> service : services) {
-            registry.register(service);
-            log.debug("服务： {}， 已经被注册", service);
+            publish(service);
         }
         return this;
     }
@@ -119,6 +129,7 @@ public class XRpcBootStrap {
      * @return
      */
     public XRpcBootStrap reference(ReferenceConfig<?> reference){
-         return this;
+        reference.setRegistry(registry);
+        return this;
     }
 }

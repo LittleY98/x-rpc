@@ -17,10 +17,13 @@ public class Application {
 
         XRpcBootStrap.getInstance()
                 .application("consumer")
-                .registry(new RegistryConfig("zookeeper//127.0.0.1：2181"))
+                .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
                 .reference(ref);
 
-        HelloXRpc helloXRpc = ref.get();
-        helloXRpc.sayHi("你好");
+        for (int i = 0; i < 20; i++) {
+            HelloXRpc helloXRpc = ref.get();
+            helloXRpc.sayHi("啦啦啦");
+        }
+
     }
 }
