@@ -14,6 +14,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -37,6 +39,8 @@ public class XRpcBootStrap {
     private static final Map<String ,ServiceConfig<?>> SERVERS_MAP = new HashMap<>();
 
     public static final Map<InetSocketAddress, Channel> CHANNEL_CACHE = new ConcurrentHashMap<>();
+
+    public static final Map<Long, CompletableFuture<Object>> PENDING_REQUEST = new ConcurrentHashMap<>();
 
 
     // 定义相关的基础配置
@@ -100,6 +104,13 @@ public class XRpcBootStrap {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
+                        ch.pipeline().addLast(new ChannelInboundHandlerAdapter(){
+                            @Override
+                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                ctx.channel().writeAndFlush(msg);
+                                super.channelRead(ctx, msg);
+                            }
+                        });
                     }
                 }).bind(8088);
     }

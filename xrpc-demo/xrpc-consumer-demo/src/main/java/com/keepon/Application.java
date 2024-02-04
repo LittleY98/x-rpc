@@ -5,12 +5,14 @@ import fun.keepon.ReferenceConfig;
 import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.api.HelloXRpc;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author LittleY
  * @description TODO
  * @date 2024/2/1 21:09
  */
+@Slf4j
 public class Application {
     public static void main(String[] args) {
         ReferenceConfig<HelloXRpc> ref = new ReferenceConfig<>();
@@ -24,6 +26,7 @@ public class Application {
 
         HelloXRpc helloXRpc = ref.get();
         String res = helloXRpc.sayHi("啦啦啦");
+        log.error("res : {}", res);
 
     }
 }
