@@ -3,12 +3,8 @@ package fun.keepon;
 import fun.keepon.api.HelloXRpc;
 import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.impl.HelloXRpcImpl;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Application {

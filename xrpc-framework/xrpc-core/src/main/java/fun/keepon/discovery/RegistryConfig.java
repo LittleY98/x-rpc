@@ -1,12 +1,10 @@
 package fun.keepon.discovery;
 
 import fun.keepon.constant.ZooKeeperConstant;
-import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.impl.ZookeeperRegistry;
 import fun.keepon.exceptions.DiscoveryException;
 import lombok.Data;
 
-import java.util.concurrent.RecursiveTask;
 
 /**
  * @author LittleY
@@ -23,6 +21,10 @@ public class RegistryConfig {
         this.connectString = connectString;
     }
 
+    /**
+     * 获取注册中心
+     * @return
+     */
     public Registry getRegistry() {
         // 获取注册中心类型
         String registryType = getRegistryType(connectString);
@@ -34,6 +36,12 @@ public class RegistryConfig {
         throw new DiscoveryException("注册中心类型不支持");
     }
 
+    /**
+     * 判断和分割URL
+     * TODO 还要考虑未来的集群的配置，后续需修改
+     * @param connectStr 连接URL
+     * @return String[0] 类型; String[1] 连接地址
+     */
     private String[] validateUrl(String connectStr){
         String[] typeAndHost = connectStr.split("://");
 
@@ -44,11 +52,21 @@ public class RegistryConfig {
         return typeAndHost;
     }
 
+    /**
+     * 获取注册中心类型
+     * @param connectStr String
+     * @return String
+     */
     private String getRegistryType(String connectStr){
         String[] res = validateUrl(connectStr);
         return res[0].toLowerCase().trim();
     }
 
+    /**
+     * 获取注册中心地址
+     * @param connectStr String
+     * @return String
+     */
     private String getRegistryUrl(String connectStr){
         String[] res = validateUrl(connectStr);
         return res[1].toLowerCase().trim();

@@ -3,11 +3,27 @@ package fun.keepon;
 import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.discovery.impl.ZookeeperRegistry;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author LittleY
@@ -19,6 +35,9 @@ public class XRpcBootStrap {
     private static final XRpcBootStrap xRpcBootStrap = new XRpcBootStrap();
 
     private static final Map<String ,ServiceConfig<?>> SERVERS_MAP = new HashMap<>();
+
+    public static final Map<InetSocketAddress, Channel> CHANNEL_CACHE = new ConcurrentHashMap<>();
+
 
     // 定义相关的基础配置
     private String applicationName = "Default";
@@ -59,10 +78,6 @@ public class XRpcBootStrap {
         return this;
     }
 
-    public XRpcBootStrap protocol(){
-        return this;
-    }
-
     /**
      * 配置当前暴露的服务使用的协议
      * @param protocolConfig 协议配置的封装
@@ -78,14 +93,15 @@ public class XRpcBootStrap {
      * 启动netty服务
      */
     public void start(){
-        while (true){
-            try {
-                Thread.sleep(1000);
-                log.debug("睡眠");
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        new ServerBootstrap()
+                .group(new NioEventLoopGroup(1), new NioEventLoopGroup())
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<NioSocketChannel>() {
+                    @Override
+                    protected void initChannel(NioSocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
+                    }
+                }).bind(8088);
     }
 
 
