@@ -5,6 +5,8 @@ import fun.keepon.NettyBootStrapInitializer;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.NetWorkException;
+import fun.keepon.transport.message.RequestPayLoad;
+import fun.keepon.transport.message.XRpcRequest;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
@@ -62,6 +64,25 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
         buffer.writeBytes("hello world".getBytes());
 
+        RequestPayLoad payLoad = RequestPayLoad.builder()
+                .serviceName(interfaceRef.getName())
+                .parameters(args)
+                .parameterTypes(method.getParameterTypes())
+                .methodName(method.getName())
+                .returnType(method.getReturnType())
+                .build();
+
+        XRpcRequest request = XRpcRequest.builder()
+                .requestId(1L)
+                .compressType((byte) 1)
+                .requestType((byte) 1)
+                .serializeType((byte) 1)
+                .requestPayLoad(payLoad)
+                .build();
+
+        log.debug("request obj: {}", request);
+
+
         // 2.3 发起请求
         ch.writeAndFlush(buffer).addListener(promise -> {
             retFuture.completeExceptionally(promise.cause());
@@ -73,6 +94,7 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
 
     /**
      * 根据地址获取Channel
+     *
      * @param addr InetSocketAddress
      * @return Channel
      */
