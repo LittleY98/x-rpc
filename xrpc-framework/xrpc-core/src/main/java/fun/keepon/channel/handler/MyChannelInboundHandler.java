@@ -1,8 +1,11 @@
 package fun.keepon.channel.handler;
 
 import fun.keepon.XRpcBootStrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author LittleY
@@ -12,8 +15,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 public class MyChannelInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        String str = (String) msg;
-        XRpcBootStrap.PENDING_REQUEST.get(1l).complete(str);
+        String str = ((ByteBuf) msg).toString(StandardCharsets.UTF_8);
+        XRpcBootStrap.PENDING_REQUEST.get(1L).complete(str);
         super.channelRead(ctx, msg);
     }
 }

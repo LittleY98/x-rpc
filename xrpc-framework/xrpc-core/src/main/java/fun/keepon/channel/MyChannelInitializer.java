@@ -17,13 +17,13 @@ import io.netty.handler.logging.LoggingHandler;
  * @date 2024/2/4
  */
 public class MyChannelInitializer extends ChannelInitializer {
+    private LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
+    private MyChannelInboundHandler MY_CHANNEL_HANDLER = new MyChannelInboundHandler();
+    private StringDecoder STRING_DECODER = new StringDecoder();
     @Override
     protected void initChannel(Channel ch){
-        MyChannelInboundHandler MY_CHANNEL_HANDLER = new MyChannelInboundHandler();
-        LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
-        StringDecoder STRING_DECODER = new StringDecoder();
-
         ch.pipeline().addLast(LOGGING_HANDLER);
+        ch.pipeline().addLast(MY_CHANNEL_HANDLER);
         ch.pipeline().addLast(new XRpcEncoderHandler());
     }
 }

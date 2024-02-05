@@ -83,11 +83,13 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
 
         // 2.3 发起请求
         ch.writeAndFlush(request).addListener(promise -> {
-            retFuture.completeExceptionally(promise.cause());
+            if (!promise.isSuccess()){
+                retFuture.completeExceptionally(promise.cause());
+            }
         });
 
         // 2.4 获取结果
-        return retFuture.get(30, TimeUnit.SECONDS);
+        return retFuture.get(3, TimeUnit.HOURS);
     }
 
     /**

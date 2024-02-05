@@ -1,10 +1,12 @@
 package fun.keepon;
 
+import fun.keepon.channel.handler.XRpcDecoderHandler;
 import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.discovery.impl.ZookeeperRegistry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -103,7 +105,16 @@ public class XRpcBootStrap {
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
+                        ch.pipeline().addLast(new XRpcDecoderHandler());
+                        ch.pipeline().addLast(new ChannelInboundHandlerAdapter(){
+                            @Override
+                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+                                buffer.writeBytes("hello world".getBytes());
+
+                                ctx.writeAndFlush(buffer);
+                            }
+                        });
                     }
                 }).bind(8088);
     }
