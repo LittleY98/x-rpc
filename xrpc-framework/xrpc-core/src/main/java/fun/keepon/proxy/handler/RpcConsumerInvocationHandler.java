@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +61,8 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
         // 2.2 封装报文
         CompletableFuture<Object> retFuture = new CompletableFuture<>();
         // TODO 请求标识符
-        XRpcBootStrap.PENDING_REQUEST.put(1L, retFuture);
+        long reqId = new Random().nextLong();
+        XRpcBootStrap.PENDING_REQUEST.put(reqId, retFuture);
 
         RequestPayLoad payLoad = RequestPayLoad.builder()
                 .serviceName(interfaceRef.getName())
@@ -71,7 +73,7 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
                 .build();
 
         XRpcRequest request = XRpcRequest.builder()
-                .requestId(1L)
+                .requestId(reqId)
                 .compressType((byte) 1)
                 .requestType((byte) 1)
                 .serializeType((byte) 1)

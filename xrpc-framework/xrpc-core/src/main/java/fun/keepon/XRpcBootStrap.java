@@ -1,5 +1,6 @@
 package fun.keepon;
 
+import fun.keepon.channel.handler.MethodCallHandler;
 import fun.keepon.channel.handler.XRpcDecoderHandler;
 import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
@@ -38,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class XRpcBootStrap {
     private static final XRpcBootStrap xRpcBootStrap = new XRpcBootStrap();
 
-    private static final Map<String ,ServiceConfig<?>> SERVERS_MAP = new HashMap<>();
+    public static final Map<String ,ServiceConfig<?>> SERVERS_MAP = new HashMap<>();
 
     public static final Map<InetSocketAddress, Channel> CHANNEL_CACHE = new ConcurrentHashMap<>();
 
@@ -105,16 +106,10 @@ public class XRpcBootStrap {
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new XRpcDecoderHandler());
-                        ch.pipeline().addLast(new ChannelInboundHandlerAdapter(){
-                            @Override
-                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                                ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-                                buffer.writeBytes("hello world".getBytes());
-
-                                ctx.writeAndFlush(buffer);
-                            }
-                        });
+                        ch.pipeline().addLast(new StringEncoder());
+                        ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
+                        ch.pipeline().addLast("报文解码", new XRpcDecoderHandler());
+                        ch.pipeline().addLast("方法调用", new MethodCallHandler());
                     }
                 }).bind(8088);
     }
