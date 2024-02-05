@@ -1,5 +1,6 @@
 package fun.keepon.channel.handler;
 
+import fun.keepon.constant.RequestType;
 import fun.keepon.transport.message.MessageFormatConstant;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
@@ -62,7 +63,8 @@ public class XRpcDecoderHandler extends LengthFieldBasedFrameDecoder {
         xRpcRequest.setSerializeType(serializeType);
         xRpcRequest.setCompressType(compressType);
 
-        if (requestType == 666){
+        // 如果是心跳包，直接返回
+        if (requestType == RequestType.HEART_BEAT.getId()){
             return  xRpcRequest;
         }
 

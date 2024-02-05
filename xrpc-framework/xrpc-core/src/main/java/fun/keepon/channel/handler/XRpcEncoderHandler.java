@@ -1,5 +1,6 @@
 package fun.keepon.channel.handler;
 
+import fun.keepon.constant.RequestType;
 import fun.keepon.transport.message.MessageFormatConstant;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
@@ -33,6 +34,7 @@ public class XRpcEncoderHandler extends MessageToByteEncoder<XRpcRequest> {
 
         // 总长度
         byte[] payloadBytes = getByteArray(msg.getRequestPayLoad());
+
         out.writeInt(payloadBytes.length + MessageFormatConstant.HEAD_LENGTH);
 
         //请求类型
@@ -48,10 +50,16 @@ public class XRpcEncoderHandler extends MessageToByteEncoder<XRpcRequest> {
         out.writeLong(msg.getRequestId());
 
         //请求负载数据
-        out.writeBytes(payloadBytes);
+        if (msg.getRequestType() == RequestType.HEART_BEAT.getId()){
+            out.writeBytes(payloadBytes);
+        }
     }
 
     private byte[] getByteArray(RequestPayLoad requestPayLoad){
+        if (requestPayLoad == null) {
+            return new byte[]{};
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ObjectOutputStream oos = new ObjectOutputStream(baos);
