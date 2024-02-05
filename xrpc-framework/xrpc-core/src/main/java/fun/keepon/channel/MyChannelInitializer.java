@@ -2,6 +2,7 @@ package fun.keepon.channel;
 
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.channel.handler.MyChannelInboundHandler;
+import fun.keepon.channel.handler.XRpcEncoderHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -23,7 +24,6 @@ public class MyChannelInitializer extends ChannelInitializer {
         StringDecoder STRING_DECODER = new StringDecoder();
 
         ch.pipeline().addLast(LOGGING_HANDLER);
-        ch.pipeline().addLast(STRING_DECODER);
-        ch.pipeline().addLast(MY_CHANNEL_HANDLER);
+        ch.pipeline().addLast(new XRpcEncoderHandler());
     }
 }

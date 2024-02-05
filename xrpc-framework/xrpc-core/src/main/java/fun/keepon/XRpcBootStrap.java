@@ -104,13 +104,6 @@ public class XRpcBootStrap {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
-                        ch.pipeline().addLast(new ChannelInboundHandlerAdapter(){
-                            @Override
-                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                                ctx.channel().writeAndFlush(msg);
-                                super.channelRead(ctx, msg);
-                            }
-                        });
                     }
                 }).bind(8088);
     }

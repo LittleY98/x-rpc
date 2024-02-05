@@ -60,9 +60,7 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
         // 2.2 封装报文
         CompletableFuture<Object> retFuture = new CompletableFuture<>();
         // TODO 请求标识符
-        XRpcBootStrap.PENDING_REQUEST.put(1l, retFuture);
-        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
-        buffer.writeBytes("hello world".getBytes());
+        XRpcBootStrap.PENDING_REQUEST.put(1L, retFuture);
 
         RequestPayLoad payLoad = RequestPayLoad.builder()
                 .serviceName(interfaceRef.getName())
@@ -84,7 +82,7 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
 
 
         // 2.3 发起请求
-        ch.writeAndFlush(buffer).addListener(promise -> {
+        ch.writeAndFlush(request).addListener(promise -> {
             retFuture.completeExceptionally(promise.cause());
         });
 

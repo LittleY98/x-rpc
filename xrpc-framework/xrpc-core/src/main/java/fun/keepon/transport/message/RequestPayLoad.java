@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author LittleY
  * @description 描述调用发请求方法数据
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RequestPayLoad {
+public class RequestPayLoad implements Serializable {
     /**
      * 服务名称
      * 如：fun.keepon.api.HelloXRpc

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author LittleY
  * @description 服务调用方发起请求报文
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class XRpcRequest {
+public class XRpcRequest implements Serializable {
 
     /**
      * 请求ID
