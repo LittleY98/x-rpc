@@ -32,6 +32,7 @@
         <lombok.version>1.18.30</lombok.version>
         <zookeeper.version>3.9.1</zookeeper.version>
         <gson.version>2.10.1</gson.version>
+        <hessian.version>4.0.66</hessian.version>
     </properties>
 
     <!--  父工程版本管理  -->
@@ -90,6 +91,13 @@
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.caucho</groupId>
+                <artifactId>hessian</artifactId>
+                <version>${hessian.version}</version>
+            </dependency>
+
 
 
         </dependencies>

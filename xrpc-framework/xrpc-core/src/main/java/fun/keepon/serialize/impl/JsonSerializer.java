@@ -16,12 +16,21 @@ import java.nio.charset.StandardCharsets;
 public class JsonSerializer implements Serializer {
     @Override
     public byte[] serialize(Object obj) {
-        String jsonString = JSON.toJSONString(obj);
-        return jsonString.getBytes(StandardCharsets.UTF_8);
+        if (obj == null) {
+            return new byte[0];
+        }
+
+        return JSON.toJSONBytes(obj);
     }
 
     @Override
     public <T> T deserialize(byte[] bytes, Class<T> clazz) {
+
+        if (bytes == null || bytes.length == 0) {
+            log.error("deserialize parameter invalid");
+            throw new RuntimeException("deserialize parameter invalid");
+        }
+
         T t = JSON.parseObject(bytes, clazz, JSONReader.Feature.SupportClassForName);
 
         return t;

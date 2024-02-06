@@ -1,7 +1,9 @@
 package fun.keepon;
 
+import fun.keepon.api.Hello;
 import fun.keepon.api.HelloXRpc;
 import fun.keepon.discovery.RegistryConfig;
+import fun.keepon.impl.HelloImpl;
 import fun.keepon.impl.HelloXRpcImpl;
 
 import fun.keepon.serialize.impl.JdkSerializer;
@@ -12,8 +14,13 @@ public class Application {
     public static void main(String[] args) {
 
         ServiceConfig<HelloXRpc> service = new ServiceConfig<>();
+        ServiceConfig<Hello> helloService = new ServiceConfig<>();
+
         service.setInterface(HelloXRpc.class);
         service.setRef(new HelloXRpcImpl());
+
+        helloService.setInterface(Hello.class);
+        helloService.setRef(new HelloImpl());
 
         XRpcBootStrap.getInstance()
                 .application("consumer")
@@ -21,6 +28,7 @@ public class Application {
 //                .protocol(new ProtocolConfig("JDK"))
                 .serializeType("jdk")
                 .publish(service)
+                .publish(helloService)
                 .start();
     }
 

@@ -18,7 +18,6 @@ import io.netty.handler.logging.LoggingHandler;
 public class MyChannelInitializer extends ChannelInitializer {
     private final LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
     private final MyChannelInboundHandler MY_CHANNEL_HANDLER = new MyChannelInboundHandler();
-
     @Override
     protected void initChannel(Channel ch){
         ch.pipeline().addLast(LOGGING_HANDLER);

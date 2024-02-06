@@ -18,7 +18,6 @@ import java.lang.reflect.Proxy;
 public class ReferenceConfig<T> {
     private Class<T> interfaceRef;
 
-    @Setter
     private Registry registry;
 
     public Class<T> getInterface() {
@@ -27,6 +26,10 @@ public class ReferenceConfig<T> {
 
     public void setInterface(Class<T> interfaceRef) {
         this.interfaceRef = interfaceRef;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
     }
 
     /**

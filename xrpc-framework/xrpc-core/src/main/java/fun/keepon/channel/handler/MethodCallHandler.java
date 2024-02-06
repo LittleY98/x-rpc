@@ -36,7 +36,7 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> 
         response.setRequestType(msg.getRequestType());
         response.setReturnVal(ret);
 
-        // TODO 发出响应
+        // 发出响应
         ctx.channel().writeAndFlush(response);
     }
 
