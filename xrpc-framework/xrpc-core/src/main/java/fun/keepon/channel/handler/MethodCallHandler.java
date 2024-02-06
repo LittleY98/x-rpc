@@ -2,8 +2,10 @@ package fun.keepon.channel.handler;
 
 import fun.keepon.ServiceConfig;
 import fun.keepon.XRpcBootStrap;
+import fun.keepon.constant.ResponseStatus;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
+import fun.keepon.transport.message.XRpcResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +27,17 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> 
 
         // 调用方法拿到结果
         Object ret = callTargetMethod(payLoad);
-
         // 封装响应报文
+        XRpcResponse response = new XRpcResponse();
+        response.setCode(ResponseStatus.SUCCESS.getId());
+        response.setRequestId(msg.getRequestId());
+        response.setCompressType(msg.getCompressType());
+        response.setSerializeType(msg.getSerializeType());
+        response.setRequestType(msg.getRequestType());
+        response.setReturnVal(ret);
 
-        // 发出响应
-        ctx.channel().writeAndFlush(ret);
-
-
+        // TODO 发出响应
+        ctx.channel().writeAndFlush(response);
     }
 
     private Object callTargetMethod(RequestPayLoad payLoad) {

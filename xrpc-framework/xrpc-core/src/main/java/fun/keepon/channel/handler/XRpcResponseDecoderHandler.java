@@ -4,6 +4,7 @@ import fun.keepon.constant.RequestType;
 import fun.keepon.transport.message.MessageFormatConstant;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
+import fun.keepon.transport.message.XRpcResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -16,11 +17,11 @@ import java.io.ObjectInputStream;
 /**
  * @author LittleY
  * @description TODO
- * @date 2024/2/5
+ * @date 2024/2/6
  */
 @Slf4j
-public class XRpcDecoderHandler extends LengthFieldBasedFrameDecoder {
-    public XRpcDecoderHandler() {
+public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
+    public XRpcResponseDecoderHandler() {
         super(MessageFormatConstant.MAX_FRAME_LENGTH,
                 MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2
                 , 4
@@ -50,39 +51,38 @@ public class XRpcDecoderHandler extends LengthFieldBasedFrameDecoder {
 
         short headLength = bytebuf.readShort();
         int totalLength = bytebuf.readInt();
-        byte requestType = bytebuf.readByte();
+        byte code = bytebuf.readByte();
         byte serializeType = bytebuf.readByte();
         byte compressType = bytebuf.readByte();
         long requestId = bytebuf.readLong();
-        log.debug("version: {}, headLength: {}, totalLength: {}, requestType: {}, serializeType: {}, compressType: {}, requestId: {}",
-                version, headLength, totalLength, requestType, serializeType, compressType, requestId);
+        log.debug("version: {}, headLength: {}, totalLength: {}, code: {}, serializeType: {}, compressType: {}, requestId: {}",
+                version, headLength, totalLength, code, serializeType, compressType, requestId);
 
-        XRpcRequest xRpcRequest = new XRpcRequest();
-        xRpcRequest.setRequestId(requestId);
-        xRpcRequest.setRequestType(requestType);
-        xRpcRequest.setSerializeType(serializeType);
-        xRpcRequest.setCompressType(compressType);
+        XRpcResponse xRpcResponse = new XRpcResponse();
+        xRpcResponse.setRequestId(requestId);
+        xRpcResponse.setCode(code);
+        xRpcResponse.setSerializeType(serializeType);
+        xRpcResponse.setCompressType(compressType);
 
-        // 如果是心跳包，直接返回
-        if (requestType == RequestType.HEART_BEAT.getId()){
-            return  xRpcRequest;
-        }
+//        // 如果是心跳包，直接返回
+//        if (requestType == RequestType.HEART_BEAT.getId()){
+//            return  xRpcResponse;
+//        }
 
-        byte[] payload = new byte[totalLength - MessageFormatConstant.HEAD_LENGTH];
-        bytebuf.readBytes(payload);
-        RequestPayLoad requestPayLoad;
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(payload);
+        byte[] returnVal = new byte[totalLength - MessageFormatConstant.HEAD_LENGTH];
+        bytebuf.readBytes(returnVal);
+        Object responseVal;
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(returnVal);
              ObjectInputStream ois = new ObjectInputStream(bis)){
 
-            requestPayLoad = (RequestPayLoad) ois.readObject();
-
+            responseVal = ois.readObject();
         } catch (ClassNotFoundException e) {
             log.error("deserialize failed, RequestID = {}", requestId);
             throw new RuntimeException(e);
         }
 
-        xRpcRequest.setRequestPayLoad(requestPayLoad);
+        xRpcResponse.setReturnVal(responseVal);
 
-        return xRpcRequest;
+        return xRpcResponse;
     }
 }

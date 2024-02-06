@@ -1,28 +1,21 @@
 package fun.keepon;
 
 import fun.keepon.channel.handler.MethodCallHandler;
-import fun.keepon.channel.handler.XRpcDecoderHandler;
+import fun.keepon.channel.handler.XRpcRequestDecoderHandler;
+import fun.keepon.channel.handler.XRpcResponseEncoderHandler;
 import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
-import fun.keepon.discovery.impl.ZookeeperRegistry;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
@@ -108,8 +101,13 @@ public class XRpcBootStrap {
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new StringEncoder());
                         ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
-                        ch.pipeline().addLast("报文解码", new XRpcDecoderHandler());
+
+                        //入站处理器
+                        ch.pipeline().addLast("报文解码", new XRpcRequestDecoderHandler());
                         ch.pipeline().addLast("方法调用", new MethodCallHandler());
+
+                        //出站处理器
+                        ch.pipeline().addLast(new XRpcResponseEncoderHandler());
                     }
                 }).bind(8088);
     }

@@ -19,7 +19,7 @@ import java.io.ObjectOutputStream;
  * @date 2024/2/5
  */
 @Slf4j
-public class XRpcEncoderHandler extends MessageToByteEncoder<XRpcRequest> {
+public class XRpcRequestEncoderHandler extends MessageToByteEncoder<XRpcRequest> {
     @Override
     protected void encode(ChannelHandlerContext ctx, XRpcRequest msg, ByteBuf out) throws Exception {
 
@@ -50,7 +50,7 @@ public class XRpcEncoderHandler extends MessageToByteEncoder<XRpcRequest> {
         out.writeLong(msg.getRequestId());
 
         //请求负载数据
-        if (msg.getRequestType() == RequestType.HEART_BEAT.getId()){
+        if (msg.getRequestType() != RequestType.HEART_BEAT.getId()){
             out.writeBytes(payloadBytes);
         }
     }
