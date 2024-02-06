@@ -74,7 +74,7 @@ public class XRpcRequestDecoderHandler extends LengthFieldBasedFrameDecoder {
         bytebuf.readBytes(payload);
 
         //序列化
-        Serializer serializer = SerializerFactory.getSerializerByCode(serializeType);
+        Serializer serializer = SerializerFactory.getSerializerByCode(serializeType).getObj();
         RequestPayLoad requestPayLoad = serializer.deserialize(payload, RequestPayLoad.class);
 
 

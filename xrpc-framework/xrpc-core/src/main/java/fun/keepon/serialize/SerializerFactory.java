@@ -1,6 +1,7 @@
 package fun.keepon.serialize;
 
 import fun.keepon.serialize.impl.JdkSerializer;
+import fun.keepon.serialize.impl.JsonSerializer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -17,17 +18,24 @@ public class SerializerFactory {
     public static final String JDK_SERIALIZER_NAME = "jdk";
     public static final Byte JDK_SERIALIZER_CODE = (byte)1;
 
+    public static final String JSON_SERIALIZER_NAME = "json";
+    public static final Byte JSON_SERIALIZER_CODE = (byte)2;
+
     private static final Map<String ,ObjectWrapper<Serializer>> SERIALIZER_NAME_CACHE = new ConcurrentHashMap<>(8);
     private static final Map<Byte ,ObjectWrapper<Serializer>> SERIALIZER_CODE_CACHE = new ConcurrentHashMap<>(8);
 
     static {
         ObjectWrapper<Serializer> jdk = new ObjectWrapper<>(JDK_SERIALIZER_NAME, JDK_SERIALIZER_CODE, new JdkSerializer());
+        ObjectWrapper<Serializer> json = new ObjectWrapper<>(JSON_SERIALIZER_NAME, JSON_SERIALIZER_CODE, new JsonSerializer());
 
         SERIALIZER_NAME_CACHE.put(jdk.getName(), jdk);
         SERIALIZER_CODE_CACHE.put(jdk.getCode(), jdk);
+
+        SERIALIZER_NAME_CACHE.put(json.getName(), json);
+        SERIALIZER_CODE_CACHE.put(json.getCode(), json);
     }
 
-    public static Serializer getSerializerByName(String serializeTypeName) {
+    public static ObjectWrapper<Serializer> getSerializerByName(String serializeTypeName) {
         ObjectWrapper<Serializer> serializerWrapper = SERIALIZER_NAME_CACHE.get(serializeTypeName);
         if (serializerWrapper == null) {
             log.error("there is no serializer named {}", serializeTypeName);
@@ -35,10 +43,10 @@ public class SerializerFactory {
             throw new RuntimeException("there is no serializer named " + serializeTypeName);
         }
 
-        return serializerWrapper.getObj();
+        return serializerWrapper;
     }
 
-    public static Serializer getSerializerByCode(Byte code) {
+    public static ObjectWrapper<Serializer> getSerializerByCode(Byte code) {
         ObjectWrapper<Serializer> serializerWrapper = SERIALIZER_CODE_CACHE.get(code);
         if (serializerWrapper == null) {
             log.error("there is no serializer, code: {}", code);
@@ -46,6 +54,6 @@ public class SerializerFactory {
             throw new RuntimeException("there is no serializer, code: " + code);
         }
 
-        return serializerWrapper.getObj();
+        return serializerWrapper;
     }
 }

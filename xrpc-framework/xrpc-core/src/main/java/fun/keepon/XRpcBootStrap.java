@@ -53,7 +53,7 @@ public class XRpcBootStrap {
     /**
      * 序列化器，默认使用JDK序列化
      */
-    public static Serializer serializer = new JdkSerializer();
+    public static String serializer = "jdk";
 
     private Registry registry;
 
@@ -100,7 +100,7 @@ public class XRpcBootStrap {
 
     public XRpcBootStrap serializeType(String  serializeTypeName){
         log.debug("当前工具使用了 {} 协议进行序列化", serializeTypeName);
-        serializer = SerializerFactory.getSerializerByName(serializeTypeName);
+        serializer = serializeTypeName;
         return this;
     }
 

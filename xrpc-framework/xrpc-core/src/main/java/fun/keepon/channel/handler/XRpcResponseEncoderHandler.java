@@ -37,7 +37,7 @@ public class XRpcResponseEncoderHandler extends MessageToByteEncoder<XRpcRespons
         out.writeShort(MessageFormatConstant.HEAD_LENGTH);
 
         // 总长度
-        byte[] payloadBytes = XRpcBootStrap.serializer.serialize(msg.getReturnVal());
+        byte[] payloadBytes = SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getObj().serialize(msg.getReturnVal());
 
         out.writeInt(payloadBytes.length + MessageFormatConstant.HEAD_LENGTH);
 
@@ -46,7 +46,7 @@ public class XRpcResponseEncoderHandler extends MessageToByteEncoder<XRpcRespons
         out.writeByte(msg.getCode());
 
         // 序列化类型
-        out.writeByte(msg.getSerializeType());
+        out.writeByte(SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getCode());
 
         //压缩类型
         out.writeByte(msg.getCompressType());

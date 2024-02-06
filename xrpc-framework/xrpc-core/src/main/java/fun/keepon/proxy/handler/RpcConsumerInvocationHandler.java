@@ -1,11 +1,11 @@
 package fun.keepon.proxy.handler;
 
-import com.google.gson.Gson;
 import fun.keepon.NettyBootStrapInitializer;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.constant.RequestType;
 import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.NetWorkException;
+import fun.keepon.serialize.SerializerFactory;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
 import fun.keepon.utils.SnowflakeIDGenerator;
@@ -78,7 +78,7 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
                 .requestId(reqId)
                 .compressType((byte) 1)
                 .requestType(RequestType.REQUEST.getId())
-                .serializeType((byte) 1)
+                .serializeType(SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getCode())
                 .requestPayLoad(payLoad)
                 .build();
 
@@ -93,7 +93,7 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
         });
 
         // 2.4 获取结果
-        return retFuture.get(3, TimeUnit.HOURS);
+        return retFuture.get(3, TimeUnit.SECONDS);
     }
 
     /**

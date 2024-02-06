@@ -35,7 +35,7 @@ public class XRpcRequestEncoderHandler extends MessageToByteEncoder<XRpcRequest>
         out.writeShort(MessageFormatConstant.HEAD_LENGTH);
 
         // 总长度
-        Serializer serializer = SerializerFactory.getSerializerByCode(msg.getSerializeType());
+        Serializer serializer = SerializerFactory.getSerializerByCode(msg.getSerializeType()).getObj();
         byte[] payloadBytes = serializer.serialize(msg.getRequestPayLoad());
 
         out.writeInt(payloadBytes.length + MessageFormatConstant.HEAD_LENGTH);

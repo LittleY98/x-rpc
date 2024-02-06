@@ -8,6 +8,8 @@ import fun.keepon.api.HelloXRpc;
 import fun.keepon.serialize.impl.JdkSerializer;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+
 /**
  * @author LittleY
  * @description TODO
@@ -23,11 +25,12 @@ public class Application {
                 .application("consumer")
                 .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
 //                .protocol(new ProtocolConfig("jdk"))
-                .serializeType("jdk")
+                .serializeType("json")
                 .reference(ref);
 
         HelloXRpc helloXRpc = ref.get();
-        String res = helloXRpc.sayHi("啦啦啦");
+//        String res = helloXRpc.sayHi("yangxun");
+        Date res = helloXRpc.whatNow();
         log.error("res : {}", res);
 
     }

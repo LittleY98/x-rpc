@@ -76,7 +76,7 @@ public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
         byte[] returnVal = new byte[totalLength - MessageFormatConstant.HEAD_LENGTH];
         bytebuf.readBytes(returnVal);
 
-        Serializer serializer = SerializerFactory.getSerializerByCode(serializeType);
+        Serializer serializer = SerializerFactory.getSerializerByCode(serializeType).getObj();
         Object responseVal = serializer.deserialize(returnVal, Object.class);
 
         xRpcResponse.setReturnVal(responseVal);
