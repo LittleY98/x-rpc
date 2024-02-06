@@ -1,6 +1,10 @@
 package fun.keepon.channel.handler;
 
+import fun.keepon.XRpcBootStrap;
 import fun.keepon.constant.RequestType;
+import fun.keepon.serialize.Serializer;
+import fun.keepon.serialize.SerializerFactory;
+import fun.keepon.serialize.impl.JdkSerializer;
 import fun.keepon.transport.message.MessageFormatConstant;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
@@ -71,15 +75,9 @@ public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
 
         byte[] returnVal = new byte[totalLength - MessageFormatConstant.HEAD_LENGTH];
         bytebuf.readBytes(returnVal);
-        Object responseVal;
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(returnVal);
-             ObjectInputStream ois = new ObjectInputStream(bis)){
 
-            responseVal = ois.readObject();
-        } catch (ClassNotFoundException e) {
-            log.error("deserialize failed, RequestID = {}", requestId);
-            throw new RuntimeException(e);
-        }
+        Serializer serializer = SerializerFactory.getSerializerByCode(serializeType);
+        Object responseVal = serializer.deserialize(returnVal, Object.class);
 
         xRpcResponse.setReturnVal(responseVal);
 

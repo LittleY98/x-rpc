@@ -5,6 +5,8 @@ import fun.keepon.channel.handler.XRpcRequestDecoderHandler;
 import fun.keepon.channel.handler.XRpcResponseEncoderHandler;
 import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
+import fun.keepon.serialize.Serializer;
+import fun.keepon.serialize.impl.JdkSerializer;
 import fun.keepon.utils.SnowflakeIDGenerator;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -16,6 +18,7 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
+import fun.keepon.serialize.SerializerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -45,9 +48,12 @@ public class XRpcBootStrap {
     // 定义相关的基础配置
     private String applicationName = "Default";
 
-
-
     private ProtocolConfig protocolConfig;
+
+    /**
+     * 序列化器，默认使用JDK序列化
+     */
+    public static Serializer serializer = new JdkSerializer();
 
     private Registry registry;
 
@@ -89,6 +95,12 @@ public class XRpcBootStrap {
     public XRpcBootStrap protocol(ProtocolConfig protocolConfig){
         log.debug("当前工具使用了 {} 协议进行序列化", protocolConfig);
         this.protocolConfig = protocolConfig;
+        return this;
+    }
+
+    public XRpcBootStrap serializeType(String  serializeTypeName){
+        log.debug("当前工具使用了 {} 协议进行序列化", serializeTypeName);
+        serializer = SerializerFactory.getSerializerByName(serializeTypeName);
         return this;
     }
 

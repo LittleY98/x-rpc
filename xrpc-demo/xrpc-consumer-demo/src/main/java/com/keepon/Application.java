@@ -5,6 +5,7 @@ import fun.keepon.ReferenceConfig;
 import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.api.HelloXRpc;
+import fun.keepon.serialize.impl.JdkSerializer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -21,7 +22,8 @@ public class Application {
         XRpcBootStrap.getInstance()
                 .application("consumer")
                 .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
-                .protocol(new ProtocolConfig("jdk"))
+//                .protocol(new ProtocolConfig("jdk"))
+                .serializeType("jdk")
                 .reference(ref);
 
         HelloXRpc helloXRpc = ref.get();

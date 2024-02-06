@@ -1,6 +1,8 @@
 package fun.keepon.channel.handler;
 
 import fun.keepon.constant.RequestType;
+import fun.keepon.serialize.Serializer;
+import fun.keepon.serialize.SerializerFactory;
 import fun.keepon.transport.message.MessageFormatConstant;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
@@ -33,7 +35,8 @@ public class XRpcRequestEncoderHandler extends MessageToByteEncoder<XRpcRequest>
         out.writeShort(MessageFormatConstant.HEAD_LENGTH);
 
         // 总长度
-        byte[] payloadBytes = getByteArray(msg.getRequestPayLoad());
+        Serializer serializer = SerializerFactory.getSerializerByCode(msg.getSerializeType());
+        byte[] payloadBytes = serializer.serialize(msg.getRequestPayLoad());
 
         out.writeInt(payloadBytes.length + MessageFormatConstant.HEAD_LENGTH);
 
