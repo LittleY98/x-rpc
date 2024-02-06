@@ -8,6 +8,7 @@ import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.NetWorkException;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
+import fun.keepon.utils.SnowflakeIDGenerator;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
@@ -61,8 +62,8 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
 
         // 2.2 封装报文
         CompletableFuture<Object> retFuture = new CompletableFuture<>();
-        // TODO 请求标识符
-        long reqId = new Random().nextLong();
+        // 请求标识符
+        long reqId = XRpcBootStrap.snowflakeIdGenerator.nextId();
         XRpcBootStrap.PENDING_REQUEST.put(reqId, retFuture);
 
         RequestPayLoad payLoad = RequestPayLoad.builder()

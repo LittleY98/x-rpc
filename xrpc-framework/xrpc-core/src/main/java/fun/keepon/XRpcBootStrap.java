@@ -5,6 +5,7 @@ import fun.keepon.channel.handler.XRpcRequestDecoderHandler;
 import fun.keepon.channel.handler.XRpcResponseEncoderHandler;
 import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
+import fun.keepon.utils.SnowflakeIDGenerator;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -37,6 +38,8 @@ public class XRpcBootStrap {
     public static final Map<InetSocketAddress, Channel> CHANNEL_CACHE = new ConcurrentHashMap<>();
 
     public static final Map<Long, CompletableFuture<Object>> PENDING_REQUEST = new ConcurrentHashMap<>();
+
+    public static final SnowflakeIDGenerator snowflakeIdGenerator = new SnowflakeIDGenerator(1L, 1L);
 
 
     // 定义相关的基础配置
