@@ -10,7 +10,7 @@ import fun.keepon.bean.Student;
  */
 public class HelloImpl implements Hello {
     @Override
-    public Student generateStudent(long id, int age) {
-        return new Student(id, age);
+    public Student generateStudent(long id, String name, int age) {
+        return new Student(id, name, age);
     }
 }

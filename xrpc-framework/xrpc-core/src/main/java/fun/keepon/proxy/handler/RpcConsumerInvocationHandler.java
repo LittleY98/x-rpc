@@ -2,6 +2,7 @@ package fun.keepon.proxy.handler;
 
 import fun.keepon.NettyBootStrapInitializer;
 import fun.keepon.XRpcBootStrap;
+import fun.keepon.compress.CompressorFactory;
 import fun.keepon.constant.RequestType;
 import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.NetWorkException;
@@ -76,7 +77,7 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
 
         XRpcRequest request = XRpcRequest.builder()
                 .requestId(reqId)
-                .compressType((byte) 1)
+                .compressType(CompressorFactory.getCompressorByName(XRpcBootStrap.compress).getCode())
                 .requestType(RequestType.REQUEST.getId())
                 .serializeType(SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getCode())
                 .requestPayLoad(payLoad)

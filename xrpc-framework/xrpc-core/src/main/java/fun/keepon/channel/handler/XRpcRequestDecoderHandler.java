@@ -1,5 +1,7 @@
 package fun.keepon.channel.handler;
 
+import fun.keepon.compress.Compressor;
+import fun.keepon.compress.CompressorFactory;
 import fun.keepon.constant.RequestType;
 import fun.keepon.serialize.Serializer;
 import fun.keepon.serialize.SerializerFactory;
@@ -73,9 +75,13 @@ public class XRpcRequestDecoderHandler extends LengthFieldBasedFrameDecoder {
         byte[] payload = new byte[totalLength - MessageFormatConstant.HEAD_LENGTH];
         bytebuf.readBytes(payload);
 
+        // 解压缩
+        Compressor compressor = CompressorFactory.getCompressorByCode(compressType).getObj();
+        byte[] decompress = compressor.decompress(payload);
+
         //序列化
         Serializer serializer = SerializerFactory.getSerializerByCode(serializeType).getObj();
-        RequestPayLoad requestPayLoad = serializer.deserialize(payload, RequestPayLoad.class);
+        RequestPayLoad requestPayLoad = serializer.deserialize(decompress, RequestPayLoad.class);
 
 
         xRpcRequest.setRequestPayLoad(requestPayLoad);

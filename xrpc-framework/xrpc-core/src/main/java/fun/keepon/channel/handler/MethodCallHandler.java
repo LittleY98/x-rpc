@@ -2,6 +2,7 @@ package fun.keepon.channel.handler;
 
 import fun.keepon.ServiceConfig;
 import fun.keepon.XRpcBootStrap;
+import fun.keepon.compress.CompressorFactory;
 import fun.keepon.constant.ResponseStatus;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
@@ -31,7 +32,7 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> 
         XRpcResponse response = new XRpcResponse();
         response.setCode(ResponseStatus.SUCCESS.getId());
         response.setRequestId(msg.getRequestId());
-        response.setCompressType(msg.getCompressType());
+        response.setCompressType(CompressorFactory.getCompressorByName(XRpcBootStrap.compress).getCode());
         response.setSerializeType(msg.getSerializeType());
         response.setRequestType(msg.getRequestType());
         response.setReturnVal(ret);

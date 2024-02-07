@@ -27,6 +27,7 @@ public class Application {
                 .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
 //                .protocol(new ProtocolConfig("JDK"))
                 .serializeType("jdk")
+                .compressorType("zlib")
                 .publish(service)
                 .publish(helloService)
                 .start();

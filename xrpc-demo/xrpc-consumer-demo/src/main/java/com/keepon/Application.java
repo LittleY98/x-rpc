@@ -5,7 +5,6 @@ import fun.keepon.api.Hello;
 import fun.keepon.bean.Student;
 import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.XRpcBootStrap;
-import fun.keepon.api.HelloXRpc;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
@@ -29,13 +28,14 @@ public class Application {
                 .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
 //                .protocol(new ProtocolConfig("jdk"))
                 .serializeType("hessian")
+                .compressorType("zlib")
                 .reference(helloRef);
 
 //        HelloXRpc helloXRpc = ref.get();
 //        String res = helloXRpc.sayHi("yangxun");
 //        Date res = helloXRpc.whatNow();
         Hello hello = helloRef.get();
-        Student res = hello.generateStudent(666L, 18);
+        Student res = hello.generateStudent(666L, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",18);
         log.error("res : {}", res);
 
     }

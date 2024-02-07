@@ -55,6 +55,11 @@ public class XRpcBootStrap {
      */
     public static String serializer = "jdk";
 
+    /**
+     * 压缩器，默认使用zlib
+     */
+    public static String compress = "zlib";
+
     private Registry registry;
 
     private XRpcBootStrap() {
@@ -101,6 +106,12 @@ public class XRpcBootStrap {
     public XRpcBootStrap serializeType(String  serializeTypeName){
         log.debug("当前工具使用了 {} 协议进行序列化", serializeTypeName);
         serializer = serializeTypeName;
+        return this;
+    }
+
+    public XRpcBootStrap compressorType(String  compressorTypeName){
+        log.debug("当前工具使用了 {} 协议进行压缩", compressorTypeName);
+        compress = compressorTypeName;
         return this;
     }
 
