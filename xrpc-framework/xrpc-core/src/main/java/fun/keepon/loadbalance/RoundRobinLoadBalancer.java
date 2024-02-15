@@ -1,16 +1,10 @@
 package fun.keepon.loadbalance;
 
-import fun.keepon.XRpcBootStrap;
-import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.LoadBalancerException;
-import io.netty.bootstrap.Bootstrap;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -19,26 +13,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @description 轮询负载均衡
  */
 @Slf4j
-public class RoundRobinLoadBalancer implements LoadBalancer{
-
-    private final Map<String, LoadBalanceSelector> SERVICE_SELECTOR_CACHE = new ConcurrentHashMap<>();
-
+public class RoundRobinLoadBalancer extends AbstractLoadBalancer{
     @Override
-    public InetSocketAddress selectServiceAddr(String serviceName) {
-
-        LoadBalanceSelector selector = SERVICE_SELECTOR_CACHE.get(serviceName);
-        if (selector == null) {
-            List<InetSocketAddress> inetSocketAddresses = XRpcBootStrap.getInstance().getRegistry().lookUp(serviceName);
-            selector = new RoundRobinSelector(inetSocketAddresses);
-            SERVICE_SELECTOR_CACHE.put(serviceName, selector);
-        }
-
-        return selector.getNext();
+    protected LoadBalanceSelector getLoadBalanceSelector(List<InetSocketAddress> inetSocketAddresses) {
+        return new RoundRobinSelector(inetSocketAddresses);
     }
 
     private static class RoundRobinSelector implements LoadBalanceSelector{
         private final List<InetSocketAddress> serviceList;
-
         private final AtomicInteger idx;
 
         public RoundRobinSelector(List<InetSocketAddress> serviceList) {

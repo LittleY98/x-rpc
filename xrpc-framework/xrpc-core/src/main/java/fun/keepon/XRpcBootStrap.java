@@ -68,6 +68,7 @@ public class XRpcBootStrap {
      */
     public static String compress = "zlib";
 
+    @Getter
     private Registry registry;
 
     private XRpcBootStrap() {
@@ -183,9 +184,5 @@ public class XRpcBootStrap {
     public XRpcBootStrap reference(ReferenceConfig<?> reference){
         reference.setRegistry(registry);
         return this;
-    }
-
-    public Registry getRegistry() {
-        return registry;
     }
 }
