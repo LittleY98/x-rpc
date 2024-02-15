@@ -7,8 +7,6 @@ import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.loadbalance.LoadBalancer;
 import fun.keepon.loadbalance.RoundRobinLoadBalancer;
-import fun.keepon.serialize.Serializer;
-import fun.keepon.serialize.impl.JdkSerializer;
 import fun.keepon.utils.SnowflakeIDGenerator;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -21,7 +19,6 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import fun.keepon.serialize.SerializerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -178,8 +175,8 @@ public class XRpcBootStrap {
     //===================================服务调用方API===================================
     /**
      *
-     * @param reference
-     * @return
+     * @param reference ReferenceConfig<?>
+     * @return XRpcBootStrap
      */
     public XRpcBootStrap reference(ReferenceConfig<?> reference){
         reference.setRegistry(registry);
