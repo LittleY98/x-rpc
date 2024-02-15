@@ -17,14 +17,13 @@ import io.netty.handler.logging.LoggingHandler;
 @ChannelHandler.Sharable
 public class MyChannelInitializer extends ChannelInitializer {
     private final LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
-    private final MyChannelInboundHandler MY_CHANNEL_HANDLER = new MyChannelInboundHandler();
     @Override
     protected void initChannel(Channel ch){
         ch.pipeline().addLast(LOGGING_HANDLER);
 
         //入站处理器
         ch.pipeline().addLast(new XRpcResponseDecoderHandler());
-        ch.pipeline().addLast(MY_CHANNEL_HANDLER);
+        ch.pipeline().addLast(new MyChannelInboundHandler());
 
         //出站处理器
         ch.pipeline().addLast(new XRpcRequestEncoderHandler());

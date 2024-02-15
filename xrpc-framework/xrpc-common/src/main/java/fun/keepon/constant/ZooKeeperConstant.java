@@ -7,7 +7,7 @@ package fun.keepon.constant;
  */
 public class ZooKeeperConstant {
     // Zookeeper 默认连接地址
-    public static final String DEFAULT_ZK_CONNECT = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183";
+    public static final String DEFAULT_ZK_CONNECT = "192.168.1.66:2181,192.168.1.66:2182,192.168.1.66:2183";
 
     // 默认超时时间
     public static final int DEFAULT_ZK_SESSION_TIMEOUT = 10000;

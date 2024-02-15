@@ -5,6 +5,8 @@ import fun.keepon.channel.handler.XRpcRequestDecoderHandler;
 import fun.keepon.channel.handler.XRpcResponseEncoderHandler;
 import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
+import fun.keepon.loadbalance.LoadBalancer;
+import fun.keepon.loadbalance.RoundRobinLoadBalancer;
 import fun.keepon.serialize.Serializer;
 import fun.keepon.serialize.impl.JdkSerializer;
 import fun.keepon.utils.SnowflakeIDGenerator;
@@ -17,6 +19,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import fun.keepon.serialize.SerializerFactory;
 
@@ -43,6 +46,11 @@ public class XRpcBootStrap {
     public static final Map<Long, CompletableFuture<Object>> PENDING_REQUEST = new ConcurrentHashMap<>();
 
     public static final SnowflakeIDGenerator snowflakeIdGenerator = new SnowflakeIDGenerator(1L, 1L);
+
+    @Getter
+    public static final LoadBalancer loadBalancer = new RoundRobinLoadBalancer();
+
+    public static final int PORT = 8089;
 
 
     // 定义相关的基础配置
@@ -135,7 +143,7 @@ public class XRpcBootStrap {
                         //出站处理器
                         ch.pipeline().addLast(new XRpcResponseEncoderHandler());
                     }
-                }).bind(8088);
+                }).bind(PORT);
     }
 
 
@@ -175,5 +183,9 @@ public class XRpcBootStrap {
     public XRpcBootStrap reference(ReferenceConfig<?> reference){
         reference.setRegistry(registry);
         return this;
+    }
+
+    public Registry getRegistry() {
+        return registry;
     }
 }

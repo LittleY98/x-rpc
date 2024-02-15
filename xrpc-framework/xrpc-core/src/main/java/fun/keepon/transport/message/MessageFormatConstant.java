@@ -6,7 +6,7 @@ package fun.keepon.transport.message;
  * @date 2024/2/5
  */
 public class MessageFormatConstant {
-    public static final byte[] MAGIC_NUMBER = "ynbb".getBytes();
+    public static final byte[] MAGIC_NUMBER = "yang".getBytes();
 
     public static final byte VERSION = 1;
 

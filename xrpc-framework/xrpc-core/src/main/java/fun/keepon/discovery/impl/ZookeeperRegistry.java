@@ -1,6 +1,7 @@
 package fun.keepon.discovery.impl;
 
 import fun.keepon.ServiceConfig;
+import fun.keepon.XRpcBootStrap;
 import fun.keepon.constant.ZooKeeperConstant;
 import fun.keepon.discovery.AbstractRegistry;
 import fun.keepon.discovery.Registry;
@@ -39,24 +40,21 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
         String serviceNamePath = ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + serviceConfig.getInterface().getName();
         ZookeeperUtil.createNode(zookeeperClient, new ZkNode(serviceNamePath, null));
 
-        String nodePath = serviceNamePath + "/" + NetUtils.getLocalIP() + ":" + 8088;
+        String nodePath = serviceNamePath + "/" + NetUtils.getLocalIP() + ":" + XRpcBootStrap.PORT;
         ZookeeperUtil.createNode(zookeeperClient, new ZkNode(nodePath, null), CreateMode.EPHEMERAL);
 
         log.debug("服务： {}， 已经被注册", serviceConfig.getInterface().getName());
     }
 
     @Override
-    public InetSocketAddress lookUp(String name) {
+    public List<InetSocketAddress> lookUp(String name) {
 
         List<String> children = ZookeeperUtil.getChildren(zookeeperClient, ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + name);
 
         log.info("children: {}", children);
 
         List<InetSocketAddress> collect = children.stream().map(s -> {
-            log.info("s: {}", s);
-
             String[] split = s.split(":");
-            log.info("split: {}", split);
             return new InetSocketAddress(split[0], Integer.parseInt(split[1]));
         }).toList();
 
@@ -64,6 +62,6 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
             throw new DiscoveryException("未找到服务");
         }
 
-        return collect.getFirst();
+        return collect;
     }
 }

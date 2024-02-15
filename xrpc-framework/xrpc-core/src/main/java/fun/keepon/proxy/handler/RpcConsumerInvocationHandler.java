@@ -6,6 +6,7 @@ import fun.keepon.compress.CompressorFactory;
 import fun.keepon.constant.RequestType;
 import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.NetWorkException;
+import fun.keepon.loadbalance.RoundRobinLoadBalancer;
 import fun.keepon.serialize.SerializerFactory;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -54,8 +56,7 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         // 1 拿到服务节点的地址
-        InetSocketAddress addr = registry.lookUp(interfaceRef.getName());
-        log.debug("获取到服务节点的地址: {}", addr);
+        InetSocketAddress addr = XRpcBootStrap.getLoadBalancer().selectServiceAddr(interfaceRef.getName());
 
         // 2 向服务端发起请求，获取结果
         // 2.1 获取Channel

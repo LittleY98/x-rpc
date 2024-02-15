@@ -3,6 +3,7 @@ package fun.keepon.discovery;
 import fun.keepon.ServiceConfig;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * @author LittleY
@@ -22,6 +23,6 @@ public interface Registry {
      * @param name 服务名称
      * @return InetSocketAddress
      */
-    InetSocketAddress lookUp(String name);
+    List<InetSocketAddress> lookUp(String name);
 
 }
