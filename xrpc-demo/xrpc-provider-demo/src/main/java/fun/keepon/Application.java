@@ -18,8 +18,8 @@ public class Application {
 
         XRpcBootStrap.getInstance()
                 .application("consumer")
-//                .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
-                .registry(new RegistryConfig("zookeeper://192.168.1.66:2181"))
+                .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
+//                .registry(new RegistryConfig("zookeeper://192.168.1.66:2181"))
 //                .protocol(new ProtocolConfig("JDK"))
                 .serializeType("hessian")
                 .compressorType("zlib")

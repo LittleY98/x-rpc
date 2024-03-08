@@ -22,8 +22,8 @@ public class Application {
 
         XRpcBootStrap.getInstance()
                 .application("consumer")
-//                .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
-                .registry(new RegistryConfig("zookeeper://192.168.1.66:2181"))
+                .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
+//                .registry(new RegistryConfig("zookeeper://192.168.1.66:2181"))
 //                .protocol(new ProtocolConfig("jdk"))
                 .serializeType("hessian")
                 .compressorType("zlib")
@@ -31,7 +31,7 @@ public class Application {
 
         HelloXRpc helloXRpc = ref.get();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             String res = helloXRpc.sayHi("yangxun");
 //          Date res = helloXRpc.whatNow();
             log.error("res : {}", res);

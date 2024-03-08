@@ -5,8 +5,10 @@ import fun.keepon.channel.handler.XRpcRequestDecoderHandler;
 import fun.keepon.channel.handler.XRpcResponseEncoderHandler;
 import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
+import fun.keepon.loadbalance.ConsistentHashLoadBalancer;
 import fun.keepon.loadbalance.LoadBalancer;
 import fun.keepon.loadbalance.RoundRobinLoadBalancer;
+import fun.keepon.transport.message.XRpcRequest;
 import fun.keepon.utils.SnowflakeIDGenerator;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -45,9 +47,11 @@ public class XRpcBootStrap {
     public static final SnowflakeIDGenerator snowflakeIdGenerator = new SnowflakeIDGenerator(1L, 1L);
 
     @Getter
-    public static final LoadBalancer loadBalancer = new RoundRobinLoadBalancer();
+    public static final LoadBalancer loadBalancer = new ConsistentHashLoadBalancer();
 
-    public static final int PORT = 8089;
+    public static final ThreadLocal<XRpcRequest> REQUEST_THREAD_LOCAL = new ThreadLocal<>();
+
+    public static final int PORT = 8092;
 
 
     // 定义相关的基础配置

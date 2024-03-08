@@ -55,12 +55,6 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-        // 1 拿到服务节点的地址
-        InetSocketAddress addr = XRpcBootStrap.getLoadBalancer().selectServiceAddr(interfaceRef.getName());
-
-        // 2 向服务端发起请求，获取结果
-        // 2.1 获取Channel
-        Channel ch = getChannel(addr);
 
         // 2.2 封装报文
         CompletableFuture<Object> retFuture = new CompletableFuture<>();
@@ -83,6 +77,17 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
                 .serializeType(SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getCode())
                 .requestPayLoad(payLoad)
                 .build();
+
+        XRpcBootStrap.REQUEST_THREAD_LOCAL.set(request);
+
+
+        // 1 拿到服务节点的地址
+        InetSocketAddress addr = XRpcBootStrap.getLoadBalancer().selectServiceAddr(interfaceRef.getName());
+
+        // 2 向服务端发起请求，获取结果
+        // 2.1 获取Channel
+        Channel ch = getChannel(addr);
+
 
         log.debug("request obj: {}", request);
 
