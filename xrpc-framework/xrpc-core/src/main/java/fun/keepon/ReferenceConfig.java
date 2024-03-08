@@ -18,6 +18,7 @@ import java.lang.reflect.Proxy;
 public class ReferenceConfig<T> {
     private Class<T> interfaceRef;
 
+    @Setter
     private Registry registry;
 
     public Class<T> getInterface() {
@@ -28,10 +29,6 @@ public class ReferenceConfig<T> {
         this.interfaceRef = interfaceRef;
     }
 
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
-    }
-
     /**
      * 生成一个api接口的代理对象
      *
@@ -40,7 +37,6 @@ public class ReferenceConfig<T> {
     public T get() {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Class[] classes = new Class[]{interfaceRef};
-
 
         Object helloProxy = Proxy.newProxyInstance(classLoader, classes
                 , new RpcConsumerInvocationHandler<T>(registry, interfaceRef));

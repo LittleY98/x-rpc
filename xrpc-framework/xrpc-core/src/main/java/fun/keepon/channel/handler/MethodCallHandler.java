@@ -3,6 +3,7 @@ package fun.keepon.channel.handler;
 import fun.keepon.ServiceConfig;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.compress.CompressorFactory;
+import fun.keepon.constant.RequestType;
 import fun.keepon.constant.ResponseStatus;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
@@ -27,7 +28,10 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> 
         RequestPayLoad payLoad = msg.getRequestPayLoad();
 
         // 调用方法拿到结果
-        Object ret = callTargetMethod(payLoad);
+        Object ret = null;
+        if (!(msg.getRequestType() == RequestType.HEART_BEAT.getId())) {
+            ret = callTargetMethod(payLoad);
+        }
         // 封装响应报文
         XRpcResponse response = new XRpcResponse();
         response.setCode(ResponseStatus.SUCCESS.getId());

@@ -9,7 +9,6 @@ import java.net.InetSocketAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -98,8 +97,7 @@ public class ConsistentHashLoadBalancer extends AbstractLoadBalancer{
         }
 
         /**
-         * 哈希算法
-         * TODO 后续待完善
+         * 基于MD5哈希算法
          * @param s String
          * @return int
          */

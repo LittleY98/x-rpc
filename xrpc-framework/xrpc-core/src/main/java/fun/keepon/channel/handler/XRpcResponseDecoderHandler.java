@@ -57,6 +57,7 @@ public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
 
         short headLength = bytebuf.readShort();
         int totalLength = bytebuf.readInt();
+        byte requestType = bytebuf.readByte();
         byte code = bytebuf.readByte();
         byte serializeType = bytebuf.readByte();
         byte compressType = bytebuf.readByte();
@@ -70,10 +71,10 @@ public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
         xRpcResponse.setSerializeType(serializeType);
         xRpcResponse.setCompressType(compressType);
 
-//        // 如果是心跳包，直接返回
-//        if (requestType == RequestType.HEART_BEAT.getId()){
-//            return  xRpcResponse;
-//        }
+        // 如果是心跳包，直接返回
+        if (requestType == RequestType.HEART_BEAT.getId()){
+            return  xRpcResponse;
+        }
 
         byte[] returnVal = new byte[totalLength - MessageFormatConstant.HEAD_LENGTH];
         bytebuf.readBytes(returnVal);

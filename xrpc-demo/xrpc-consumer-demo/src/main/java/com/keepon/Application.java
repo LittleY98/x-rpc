@@ -5,6 +5,7 @@ import fun.keepon.api.HelloXRpc;
 import fun.keepon.bean.Student;
 import fun.keepon.discovery.RegistryConfig;
 import fun.keepon.XRpcBootStrap;
+import fun.keepon.heatbeat.HeartBeatDetector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
@@ -31,11 +32,13 @@ public class Application {
 
         HelloXRpc helloXRpc = ref.get();
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 3; i++) {
             String res = helloXRpc.sayHi("yangxun");
 //          Date res = helloXRpc.whatNow();
             log.error("res : {}", res);
         }
+
+        HeartBeatDetector.detectHeartbeat(HelloXRpc.class.getName());
 
 
     }

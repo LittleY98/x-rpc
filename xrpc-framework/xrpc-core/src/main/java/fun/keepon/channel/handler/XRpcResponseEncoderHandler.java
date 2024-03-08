@@ -48,8 +48,8 @@ public class XRpcResponseEncoderHandler extends MessageToByteEncoder<XRpcRespons
 
         out.writeInt(payloadBytes.length + MessageFormatConstant.HEAD_LENGTH);
 
-        //TODO 请求类型
-//        out.writeByte(msg.getRequestType());
+//        TODO 请求类型
+        out.writeByte(msg.getRequestType());
         out.writeByte(msg.getCode());
 
         // 序列化类型
