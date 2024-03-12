@@ -6,6 +6,7 @@ import fun.keepon.constant.ZooKeeperConstant;
 import fun.keepon.discovery.AbstractRegistry;
 import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.DiscoveryException;
+import fun.keepon.nodemonitor.MyWatcher;
 import fun.keepon.utils.NetUtils;
 import fun.keepon.utils.zk.ZkNode;
 import fun.keepon.utils.zk.ZookeeperUtil;
@@ -49,7 +50,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
     @Override
     public List<InetSocketAddress> lookUp(String name) {
 
-        List<String> children = ZookeeperUtil.getChildren(zookeeperClient, ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + name);
+        List<String> children = ZookeeperUtil.getChildren(zookeeperClient, ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + name, new MyWatcher());
 
         log.info("children: {}", children);
 

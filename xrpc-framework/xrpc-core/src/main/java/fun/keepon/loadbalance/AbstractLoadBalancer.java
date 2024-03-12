@@ -29,5 +29,10 @@ public abstract class AbstractLoadBalancer implements LoadBalancer{
         return selector.getNext();
     }
 
+    @Override
+    public synchronized void reBalance(String serviceName, List<InetSocketAddress> addresses) {
+        SERVICE_SELECTOR_CACHE.put(serviceName, getLoadBalanceSelector(addresses));
+    }
+
     protected abstract LoadBalanceSelector getLoadBalanceSelector(List<InetSocketAddress> inetSocketAddresses);
 }

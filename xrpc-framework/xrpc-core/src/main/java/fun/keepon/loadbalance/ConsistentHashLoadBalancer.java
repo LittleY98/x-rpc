@@ -67,11 +67,6 @@ public class ConsistentHashLoadBalancer extends AbstractLoadBalancer{
             return circle.get(hashCode);
         }
 
-        @Override
-        public void reBalance() {
-
-        }
-
         /**
          * 向hash环中挂载服务节点
          * @param inetSocketAddress InetSocketAddress

@@ -12,4 +12,5 @@ public interface LoadBalancer {
 
     InetSocketAddress selectServiceAddr(String serviceName);
 
+    void reBalance(String serviceName, List<InetSocketAddress> addresses);
 }

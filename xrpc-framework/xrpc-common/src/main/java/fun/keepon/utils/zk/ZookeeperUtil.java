@@ -7,6 +7,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.Stat;
 
 import java.util.List;
@@ -103,15 +104,13 @@ public class ZookeeperUtil {
      * @param path String
      * @return List<String>
      */
-    public static List<String> getChildren(CuratorFramework client, String path){
+    public static List<String> getChildren(CuratorFramework client, String path, Watcher watcher) {
         try {
-            return client.getChildren().forPath(path);
+            return client.getChildren().usingWatcher(watcher).forPath(path);
         } catch (Exception e) {
             log.error("获取子节点异常: {}", path);
             throw new ZookeeperException(e.getCause());
         }
-
     }
-
 
 }

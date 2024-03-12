@@ -17,7 +17,7 @@ import java.util.Date;
  */
 @Slf4j
 public class Application {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ReferenceConfig<HelloXRpc> ref = new ReferenceConfig<>();
         ref.setInterface(HelloXRpc.class);
 
@@ -32,14 +32,24 @@ public class Application {
 
         HelloXRpc helloXRpc = ref.get();
 
-        for (int i = 0; i < 3; i++) {
-            String res = helloXRpc.sayHi("yangxun");
+        new Thread(()->{
+            for (int i = 0; i < 1000; i++) {
+                String res = null;
+                try {
+                    res = helloXRpc.sayHi("yangxun");
+                } catch (Exception e) {
+                    log.error("请求出错");
+                }
 //          Date res = helloXRpc.whatNow();
-            log.error("res : {}", res);
-        }
+                log.error("res : {}", res);
 
-        HeartBeatDetector.detectHeartbeat(HelloXRpc.class.getName());
-
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
 
     }
 }

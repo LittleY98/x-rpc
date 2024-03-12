@@ -5,8 +5,10 @@ import fun.keepon.channel.handler.XRpcRequestDecoderHandler;
 import fun.keepon.channel.handler.XRpcResponseEncoderHandler;
 import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.RegistryConfig;
+import fun.keepon.heatbeat.HeartBeatDetector;
 import fun.keepon.loadbalance.ConsistentHashLoadBalancer;
 import fun.keepon.loadbalance.LoadBalancer;
+import fun.keepon.loadbalance.MinResponseTimeLoadBalancer;
 import fun.keepon.loadbalance.RoundRobinLoadBalancer;
 import fun.keepon.transport.message.XRpcRequest;
 import fun.keepon.utils.SnowflakeIDGenerator;
@@ -26,6 +28,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -47,11 +50,13 @@ public class XRpcBootStrap {
     public static final SnowflakeIDGenerator snowflakeIdGenerator = new SnowflakeIDGenerator(1L, 1L);
 
     @Getter
-    public static final LoadBalancer loadBalancer = new ConsistentHashLoadBalancer();
+    public static final LoadBalancer loadBalancer = new RoundRobinLoadBalancer();
 
     public static final ThreadLocal<XRpcRequest> REQUEST_THREAD_LOCAL = new ThreadLocal<>();
 
-    public static final int PORT = 8092;
+    public static final TreeMap<Long, Channel> ANSWER_TIME_CHANNEL_CACHE = new TreeMap<>();
+
+    public static final int PORT = 8091;
 
 
     // 定义相关的基础配置
@@ -184,6 +189,7 @@ public class XRpcBootStrap {
      */
     public XRpcBootStrap reference(ReferenceConfig<?> reference){
         reference.setRegistry(registry);
+//        HeartBeatDetector.detectHeartbeat(reference.getInterface().getName());
         return this;
     }
 }

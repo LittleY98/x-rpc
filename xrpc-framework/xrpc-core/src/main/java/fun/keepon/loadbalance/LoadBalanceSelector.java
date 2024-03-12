@@ -11,6 +11,4 @@ public interface LoadBalanceSelector {
 
     InetSocketAddress getNext();
 
-    void reBalance();
-
 }
