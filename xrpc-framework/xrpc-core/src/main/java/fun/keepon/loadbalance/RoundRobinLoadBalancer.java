@@ -36,7 +36,7 @@ public class RoundRobinLoadBalancer extends AbstractLoadBalancer{
             }
 
             InetSocketAddress inetSocketAddress = serviceList.get(idx.get());
-            if(idx.get() ==serviceList.size()-1){
+            if(idx.get() == serviceList.size() - 1){
                 idx.set(0);
             }else{
                 idx.incrementAndGet();
