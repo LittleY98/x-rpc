@@ -10,7 +10,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>xrpc-core</artifactId>
+    <artifactId>xrpc-manager</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

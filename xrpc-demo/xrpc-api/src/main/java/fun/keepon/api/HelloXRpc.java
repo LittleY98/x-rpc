@@ -1,5 +1,7 @@
 package fun.keepon.api;
 
+import java.util.Date;
+
 public interface HelloXRpc {
 
     /**
@@ -8,5 +10,7 @@ public interface HelloXRpc {
      * @return 返回的结果
      */
     String sayHi(String msg);
+
+    Date whatNow();
 
 }
