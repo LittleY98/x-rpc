@@ -26,10 +26,11 @@ public class Application {
                 .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
 //                .registry(new RegistryConfig("zookeeper://192.168.1.66:2181"))
 //                .protocol(new ProtocolConfig("JDK"))
-                .serializeType("hessian")
+                .serializeType("jdk")
                 .compressorType("zlib")
-                .publish(service)
+//                .publish(service)
 //                .publish(demoService)
+                .scan("fun.keepon.impl")
                 .start();
     }
 

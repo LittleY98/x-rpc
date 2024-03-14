@@ -1,5 +1,7 @@
 package fun.keepon;
 
+import com.alibaba.fastjson2.JSON;
+import fun.keepon.annotation.XRpcApi;
 import fun.keepon.channel.handler.MethodCallHandler;
 import fun.keepon.channel.handler.XRpcRequestDecoderHandler;
 import fun.keepon.channel.handler.XRpcResponseEncoderHandler;
@@ -24,13 +26,15 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.net.URL;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author LittleY
@@ -164,7 +168,7 @@ public class XRpcBootStrap {
     public XRpcBootStrap publish(ServiceConfig<?> service){
         registry.register(service);
         SERVERS_MAP.put(service.getInterface().getName(), service);
-        log.debug("服务： {}， 已经被注册", service);
+        log.debug("服务： {}， 已经被注册", JSON.toJSONString(service));
         return this;
     }
 
@@ -180,6 +184,40 @@ public class XRpcBootStrap {
         return this;
     }
 
+    public XRpcBootStrap scan(String packageName){
+        // 获取包下的所有类
+        List<Class> classList = getClassList(packageName);
+
+        // 筛选出classList中有XRpcApi注解的类,并返回list
+        List<Class> collect = classList.stream().filter(c -> c.isAnnotationPresent(XRpcApi.class)).collect(Collectors.toList());
+
+        for (Class serviceImpl : collect) {
+
+            Class[] interfaces = serviceImpl.getInterfaces();
+
+            Object instance = null;
+            try {
+                instance = serviceImpl.getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                log.error("实例化失败");
+                throw new RuntimeException(e);
+            }
+
+            ArrayList<ServiceConfig<?>> serviceConfigs = new ArrayList<>();
+            for (Class inter : interfaces) {
+                ServiceConfig<?> s = new ServiceConfig<>();
+                s.setInterface(inter);
+                s.setRef(instance);
+                serviceConfigs.add(s);
+            }
+
+            publish(serviceConfigs);
+        }
+
+        return this;
+    }
+
 
     //===================================服务调用方API===================================
     /**
@@ -191,5 +229,47 @@ public class XRpcBootStrap {
         reference.setRegistry(registry);
 //        HeartBeatDetector.detectHeartbeat(reference.getInterface().getName());
         return this;
+    }
+
+    private static List<Class> getClassList(String packageName) {
+        List<Class> classes = new ArrayList<>();
+        String path = packageName.replace('.', '/');
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Enumeration<URL> resources;
+        try {
+            resources = classLoader.getResources(path);
+            List<File> dirs = new ArrayList<>();
+            while (resources.hasMoreElements()) {
+                URL resource = resources.nextElement();
+                dirs.add(new File(resource.getFile()));
+            }
+            for (File directory : dirs) {
+                classes.addAll(findClasses(directory, packageName));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return classes;
+    }
+
+    private static List<Class> findClasses(File directory, String packageName) {
+        List<Class> classes = new ArrayList<>();
+        if (!directory.exists()) {
+            return classes;
+        }
+        File[] files = directory.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                assert !file.getName().contains(".");
+                classes.addAll(findClasses(file, packageName + "." + file.getName()));
+            } else if (file.getName().endsWith(".class")) {
+                try {
+                    classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return classes;
     }
 }

@@ -44,7 +44,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
         String nodePath = serviceNamePath + "/" + NetUtils.getLocalIP() + ":" + XRpcBootStrap.PORT;
         ZookeeperUtil.createNode(zookeeperClient, new ZkNode(nodePath, null), CreateMode.EPHEMERAL);
 
-        log.debug("服务： {}， 已经被注册", serviceConfig.getInterface().getName());
+        log.debug("节点 {} 已添加", nodePath);
     }
 
     @Override

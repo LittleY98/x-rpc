@@ -1,9 +1,11 @@
 package fun.keepon.impl;
 
+import fun.keepon.annotation.XRpcApi;
 import fun.keepon.api.HelloXRpc;
 
 import java.util.Date;
 
+@XRpcApi
 public class HelloXRpcImpl implements HelloXRpc {
     @Override
     public String sayHi(String msg) {
