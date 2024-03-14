@@ -5,15 +5,9 @@ import fun.keepon.annotation.XRpcApi;
 import fun.keepon.channel.handler.MethodCallHandler;
 import fun.keepon.channel.handler.XRpcRequestDecoderHandler;
 import fun.keepon.channel.handler.XRpcResponseEncoderHandler;
-import fun.keepon.discovery.Registry;
+import fun.keepon.config.Configuration;
 import fun.keepon.discovery.RegistryConfig;
-import fun.keepon.heatbeat.HeartBeatDetector;
-import fun.keepon.loadbalance.ConsistentHashLoadBalancer;
-import fun.keepon.loadbalance.LoadBalancer;
-import fun.keepon.loadbalance.MinResponseTimeLoadBalancer;
-import fun.keepon.loadbalance.RoundRobinLoadBalancer;
 import fun.keepon.transport.message.XRpcRequest;
-import fun.keepon.utils.SnowflakeIDGenerator;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -51,37 +45,15 @@ public class XRpcBootStrap {
 
     public static final Map<Long, CompletableFuture<Object>> PENDING_REQUEST = new ConcurrentHashMap<>();
 
-    public static final SnowflakeIDGenerator snowflakeIdGenerator = new SnowflakeIDGenerator(1L, 1L);
-
-    @Getter
-    public static final LoadBalancer loadBalancer = new RoundRobinLoadBalancer();
-
     public static final ThreadLocal<XRpcRequest> REQUEST_THREAD_LOCAL = new ThreadLocal<>();
 
     public static final TreeMap<Long, Channel> ANSWER_TIME_CHANNEL_CACHE = new TreeMap<>();
 
-    public static final int PORT = 8093;
-
-
-    // 定义相关的基础配置
-    private String applicationName = "Default";
-
-    private ProtocolConfig protocolConfig;
-
-    /**
-     * 序列化器，默认使用JDK序列化
-     */
-    public static String serializer = "jdk";
-
-    /**
-     * 压缩器，默认使用zlib
-     */
-    public static String compress = "zlib";
-
     @Getter
-    private Registry registry;
+    private Configuration configuration;
 
     private XRpcBootStrap() {
+        configuration = new Configuration();
     }
 
     /**
@@ -98,7 +70,7 @@ public class XRpcBootStrap {
      * @return this
      */
     public XRpcBootStrap application(String appName){
-        this.applicationName = appName;
+        configuration.setApplicationName(appName);
         return this;
     }
 
@@ -107,7 +79,7 @@ public class XRpcBootStrap {
      * @return this
      */
     public XRpcBootStrap registry(RegistryConfig registryConfig){
-        registry = registryConfig.getRegistry();
+        configuration.setRegistry(registryConfig.getRegistry());
         return this;
     }
 
@@ -118,19 +90,19 @@ public class XRpcBootStrap {
      */
     public XRpcBootStrap protocol(ProtocolConfig protocolConfig){
         log.debug("当前工具使用了 {} 协议进行序列化", protocolConfig);
-        this.protocolConfig = protocolConfig;
+        configuration.setProtocolConfig(protocolConfig);
         return this;
     }
 
     public XRpcBootStrap serializeType(String  serializeTypeName){
         log.debug("当前工具使用了 {} 协议进行序列化", serializeTypeName);
-        serializer = serializeTypeName;
+        configuration.setSerializer(serializeTypeName);
         return this;
     }
 
     public XRpcBootStrap compressorType(String  compressorTypeName){
         log.debug("当前工具使用了 {} 协议进行压缩", compressorTypeName);
-        compress = compressorTypeName;
+        configuration.setCompress(compressorTypeName);
         return this;
     }
 
@@ -148,13 +120,13 @@ public class XRpcBootStrap {
                         ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
 
                         //入站处理器
-                        ch.pipeline().addLast("报文解码", new XRpcRequestDecoderHandler());
-                        ch.pipeline().addLast("方法调用", new MethodCallHandler());
+                        ch.pipeline().addLast("Packet decoding", new XRpcRequestDecoderHandler());
+                        ch.pipeline().addLast("Method calls", new MethodCallHandler());
 
                         //出站处理器
                         ch.pipeline().addLast(new XRpcResponseEncoderHandler());
                     }
-                }).bind(PORT);
+                }).bind(configuration.getPort());
     }
 
 
@@ -166,7 +138,7 @@ public class XRpcBootStrap {
      * @return this
      */
     public XRpcBootStrap publish(ServiceConfig<?> service){
-        registry.register(service);
+        configuration.getRegistry().register(service);
         SERVERS_MAP.put(service.getInterface().getName(), service);
         log.debug("服务： {}， 已经被注册", JSON.toJSONString(service));
         return this;
@@ -226,7 +198,7 @@ public class XRpcBootStrap {
      * @return XRpcBootStrap
      */
     public XRpcBootStrap reference(ReferenceConfig<?> reference){
-        reference.setRegistry(registry);
+        reference.setRegistry(configuration.getRegistry());
 //        HeartBeatDetector.detectHeartbeat(reference.getInterface().getName());
         return this;
     }
@@ -247,6 +219,7 @@ public class XRpcBootStrap {
                 classes.addAll(findClasses(directory, packageName));
             }
         } catch (IOException e) {
+            log.error("Fail to get class");
             e.printStackTrace();
         }
         return classes;
@@ -266,6 +239,7 @@ public class XRpcBootStrap {
                 try {
                     classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
                 } catch (ClassNotFoundException e) {
+                    log.error("Fail to get class");
                     e.printStackTrace();
                 }
             }

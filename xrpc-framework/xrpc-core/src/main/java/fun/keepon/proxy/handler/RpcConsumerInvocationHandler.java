@@ -3,6 +3,7 @@ package fun.keepon.proxy.handler;
 import fun.keepon.NettyBootStrapInitializer;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.compress.CompressorFactory;
+import fun.keepon.config.Configuration;
 import fun.keepon.constant.RequestType;
 import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.NetWorkException;
@@ -55,11 +56,12 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
+        Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
 
         // 2.2 封装报文
         CompletableFuture<Object> retFuture = new CompletableFuture<>();
         // 请求标识符
-        long reqId = XRpcBootStrap.snowflakeIdGenerator.nextId();
+        long reqId = conf.getSnowflakeIdGenerator().nextId();
         XRpcBootStrap.PENDING_REQUEST.put(reqId, retFuture);
 
         RequestPayLoad payLoad = RequestPayLoad.builder()
@@ -72,9 +74,9 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
 
         XRpcRequest request = XRpcRequest.builder()
                 .requestId(reqId)
-                .compressType(CompressorFactory.getCompressorByName(XRpcBootStrap.compress).getCode())
+                .compressType(CompressorFactory.getCompressorByName(conf.getCompress()).getCode())
                 .requestType(RequestType.REQUEST.getId())
-                .serializeType(SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getCode())
+                .serializeType(SerializerFactory.getSerializerByName(conf.getSerializer()).getCode())
                 .requestPayLoad(payLoad)
                 .build();
 
@@ -82,7 +84,7 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
 
 
         // 1 拿到服务节点的地址
-        InetSocketAddress addr = XRpcBootStrap.getLoadBalancer().selectServiceAddr(interfaceRef.getName());
+        InetSocketAddress addr = conf.getLoadBalancer().selectServiceAddr(interfaceRef.getName());
 
         // 2 向服务端发起请求，获取结果
         // 2.1 获取Channel

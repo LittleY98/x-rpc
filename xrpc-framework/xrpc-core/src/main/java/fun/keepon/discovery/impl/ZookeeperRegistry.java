@@ -16,7 +16,6 @@ import org.apache.zookeeper.CreateMode;
 
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author LittleY
@@ -41,7 +40,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
         String serviceNamePath = ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + serviceConfig.getInterface().getName();
         ZookeeperUtil.createNode(zookeeperClient, new ZkNode(serviceNamePath, null));
 
-        String nodePath = serviceNamePath + "/" + NetUtils.getLocalIP() + ":" + XRpcBootStrap.PORT;
+        String nodePath = serviceNamePath + "/" + NetUtils.getLocalIP() + ":" + XRpcBootStrap.getInstance().getConfiguration().getPort();
         ZookeeperUtil.createNode(zookeeperClient, new ZkNode(nodePath, null), CreateMode.EPHEMERAL);
 
         log.debug("节点 {} 已添加", nodePath);

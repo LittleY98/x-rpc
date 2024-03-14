@@ -23,7 +23,7 @@ public abstract class AbstractLoadBalancer implements LoadBalancer{
 
         LoadBalanceSelector selector = SERVICE_SELECTOR_CACHE.get(serviceName);
         if (selector == null) {
-            List<InetSocketAddress> inetSocketAddresses = XRpcBootStrap.getInstance().getRegistry().lookUp(serviceName);
+            List<InetSocketAddress> inetSocketAddresses = XRpcBootStrap.getInstance().getConfiguration().getRegistry().lookUp(serviceName);
             selector = getLoadBalanceSelector(inetSocketAddresses);
             SERVICE_SELECTOR_CACHE.put(serviceName, selector);
         }

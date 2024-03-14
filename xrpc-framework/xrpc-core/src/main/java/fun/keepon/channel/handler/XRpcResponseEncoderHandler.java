@@ -3,6 +3,7 @@ package fun.keepon.channel.handler;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.compress.Compressor;
 import fun.keepon.compress.CompressorFactory;
+import fun.keepon.config.Configuration;
 import fun.keepon.constant.RequestType;
 import fun.keepon.serialize.Serializer;
 import fun.keepon.serialize.SerializerFactory;
@@ -30,6 +31,8 @@ public class XRpcResponseEncoderHandler extends MessageToByteEncoder<XRpcRespons
     @Override
     protected void encode(ChannelHandlerContext ctx, XRpcResponse msg, ByteBuf out) throws Exception {
 
+        Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
+
         // 魔数
         out.writeBytes(MessageFormatConstant.MAGIC_NUMBER);
 
@@ -40,8 +43,8 @@ public class XRpcResponseEncoderHandler extends MessageToByteEncoder<XRpcRespons
         out.writeShort(MessageFormatConstant.HEAD_LENGTH);
 
         // 总长度
-        Serializer serializer = SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getObj();
-        Compressor compressor = CompressorFactory.getCompressorByName(XRpcBootStrap.compress).getObj();
+        Serializer serializer = SerializerFactory.getSerializerByName(conf.getSerializer()).getObj();
+        Compressor compressor = CompressorFactory.getCompressorByName(conf.getCompress()).getObj();
 
         byte[] serialize = serializer.serialize(msg.getReturnVal());
         byte[] payloadBytes = compressor.compress(serialize);
@@ -53,7 +56,7 @@ public class XRpcResponseEncoderHandler extends MessageToByteEncoder<XRpcRespons
         out.writeByte(msg.getCode());
 
         // 序列化类型
-        out.writeByte(SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getCode());
+        out.writeByte(SerializerFactory.getSerializerByName(conf.getSerializer()).getCode());
 
         //压缩类型
         out.writeByte(msg.getCompressType());

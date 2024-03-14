@@ -36,7 +36,7 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> 
         XRpcResponse response = new XRpcResponse();
         response.setCode(ResponseStatus.SUCCESS.getId());
         response.setRequestId(msg.getRequestId());
-        response.setCompressType(CompressorFactory.getCompressorByName(XRpcBootStrap.compress).getCode());
+        response.setCompressType(CompressorFactory.getCompressorByName(XRpcBootStrap.getInstance().getConfiguration().getCompress()).getCode());
         response.setSerializeType(msg.getSerializeType());
         response.setRequestType(msg.getRequestType());
         response.setReturnVal(ret);
