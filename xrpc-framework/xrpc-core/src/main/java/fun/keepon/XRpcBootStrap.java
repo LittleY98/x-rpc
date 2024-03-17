@@ -92,6 +92,7 @@ public class XRpcBootStrap {
      */
     public XRpcBootStrap registry(RegistryConfig registryConfig){
         configuration.setRegistry(registryConfig.getRegistry());
+        configuration.setRegistryConfig(registryConfig);
         return this;
     }
 
@@ -122,6 +123,7 @@ public class XRpcBootStrap {
      * 启动netty服务
      */
     public void start(){
+        log.info("The service is about to start, and the configuration file is: {}", configuration);
         new ServerBootstrap()
                 .group(new NioEventLoopGroup(1), new NioEventLoopGroup())
                 .channel(NioServerSocketChannel.class)
