@@ -1,6 +1,7 @@
-package fun.keepon.discovery;
+package fun.keepon.config;
 
 import fun.keepon.constant.ZooKeeperConstant;
+import fun.keepon.discovery.Registry;
 import fun.keepon.discovery.impl.ZookeeperRegistry;
 import fun.keepon.exceptions.DiscoveryException;
 import lombok.Data;

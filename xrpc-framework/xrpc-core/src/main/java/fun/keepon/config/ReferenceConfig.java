@@ -1,4 +1,4 @@
-package fun.keepon;
+package fun.keepon.config;
 
 import fun.keepon.discovery.Registry;
 import fun.keepon.proxy.handler.RpcConsumerInvocationHandler;

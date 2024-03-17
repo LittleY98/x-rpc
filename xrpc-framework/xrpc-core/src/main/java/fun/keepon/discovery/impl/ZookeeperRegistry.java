@@ -1,6 +1,6 @@
 package fun.keepon.discovery.impl;
 
-import fun.keepon.ServiceConfig;
+import fun.keepon.config.ServiceConfig;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.constant.ZooKeeperConstant;
 import fun.keepon.discovery.AbstractRegistry;

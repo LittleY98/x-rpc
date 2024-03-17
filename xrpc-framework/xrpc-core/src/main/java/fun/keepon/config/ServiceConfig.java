@@ -1,4 +1,4 @@
-package fun.keepon;
+package fun.keepon.config;
 
 import lombok.Getter;
 import lombok.Setter;

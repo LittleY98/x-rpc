@@ -33,6 +33,7 @@
         <zookeeper.version>3.9.1</zookeeper.version>
         <gson.version>2.10.1</gson.version>
         <hessian.version>4.0.66</hessian.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
     </properties>
 
     <!--  父工程版本管理  -->
@@ -98,6 +99,11 @@
                 <version>${hessian.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
 
 
         </dependencies>

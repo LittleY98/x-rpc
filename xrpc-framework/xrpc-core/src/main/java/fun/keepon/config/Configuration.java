@@ -1,12 +1,13 @@
 package fun.keepon.config;
 
-import fun.keepon.ProtocolConfig;
+import com.alibaba.fastjson2.JSON;
 import fun.keepon.discovery.Registry;
 import fun.keepon.loadbalance.LoadBalancer;
 import fun.keepon.loadbalance.RoundRobinLoadBalancer;
 import fun.keepon.utils.SnowflakeIDGenerator;
+import fun.keepon.utils.yml.YamlReader;
 import lombok.Data;
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author LittleY
@@ -14,11 +15,14 @@ import lombok.Getter;
  * @description 配置类
  */
 @Data
+@Slf4j
 public class Configuration {
 
     private int port = 8093;
 
     private String applicationName = "Default";
+
+    private RegistryConfig registryConfig =new RegistryConfig("zookeeper://127.0.0.1:2181");
 
     private ProtocolConfig protocolConfig;
 
@@ -31,7 +35,6 @@ public class Configuration {
      */
     private String serializer = "jdk";
 
-
     /**
      * 压缩器，默认使用zlib
      */
@@ -39,7 +42,7 @@ public class Configuration {
 
     private Registry registry;
 
-
-
-
+    public Configuration() {
+        YamlResolver.loadFromYaml(this);
+    }
 }

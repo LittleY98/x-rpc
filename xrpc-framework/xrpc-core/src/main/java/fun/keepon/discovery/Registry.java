@@ -1,6 +1,6 @@
 package fun.keepon.discovery;
 
-import fun.keepon.ServiceConfig;
+import fun.keepon.config.ServiceConfig;
 
 import java.net.InetSocketAddress;
 import java.util.List;

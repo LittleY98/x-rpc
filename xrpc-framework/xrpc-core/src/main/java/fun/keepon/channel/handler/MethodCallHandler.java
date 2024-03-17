@@ -1,6 +1,6 @@
 package fun.keepon.channel.handler;
 
-import fun.keepon.ServiceConfig;
+import fun.keepon.config.ServiceConfig;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.compress.CompressorFactory;
 import fun.keepon.constant.RequestType;

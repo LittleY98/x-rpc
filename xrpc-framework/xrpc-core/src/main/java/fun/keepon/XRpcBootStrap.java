@@ -6,7 +6,10 @@ import fun.keepon.channel.handler.MethodCallHandler;
 import fun.keepon.channel.handler.XRpcRequestDecoderHandler;
 import fun.keepon.channel.handler.XRpcResponseEncoderHandler;
 import fun.keepon.config.Configuration;
-import fun.keepon.discovery.RegistryConfig;
+import fun.keepon.config.ProtocolConfig;
+import fun.keepon.config.ReferenceConfig;
+import fun.keepon.config.ServiceConfig;
+import fun.keepon.config.RegistryConfig;
 import fun.keepon.transport.message.XRpcRequest;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -37,9 +40,9 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class XRpcBootStrap {
-    private static final XRpcBootStrap xRpcBootStrap = new XRpcBootStrap();
+    private static XRpcBootStrap xRpcBootStrap;
 
-    public static final Map<String ,ServiceConfig<?>> SERVERS_MAP = new HashMap<>();
+    public static final Map<String , ServiceConfig<?>> SERVERS_MAP = new HashMap<>();
 
     public static final Map<InetSocketAddress, Channel> CHANNEL_CACHE = new ConcurrentHashMap<>();
 
@@ -56,11 +59,20 @@ public class XRpcBootStrap {
         configuration = new Configuration();
     }
 
+
+
     /**
      * 获取实例
      * @return this
      */
     public static XRpcBootStrap getInstance(){
+
+        if (xRpcBootStrap == null) {
+            synchronized (XRpcBootStrap.class) {
+                if (xRpcBootStrap == null)
+                    xRpcBootStrap = new XRpcBootStrap();
+            }
+        }
         return xRpcBootStrap;
     }
 
