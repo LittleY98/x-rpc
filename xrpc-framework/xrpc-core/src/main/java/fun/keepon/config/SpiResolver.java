@@ -1,8 +1,13 @@
 package fun.keepon.config;
 
+import fun.keepon.compress.Compressor;
+import fun.keepon.compress.CompressorFactory;
 import fun.keepon.loadbalance.LoadBalancer;
+import fun.keepon.serialize.ObjectWrapper;
+import fun.keepon.serialize.Serializer;
+import fun.keepon.serialize.SerializerFactory;
 
-import java.util.ServiceLoader;
+import java.util.List;
 
 /**
  * @author LittleY
@@ -11,11 +16,20 @@ import java.util.ServiceLoader;
  */
 public class SpiResolver {
     public static void loadFromSpi(Configuration configuration) {
-        ServiceLoader<LoadBalancer> loadBalancers = ServiceLoader.load(LoadBalancer.class);
 
-        for (LoadBalancer loadBalancer : loadBalancers) {
-            configuration.setLoadBalancer(loadBalancer);
-            break;
+        List<ObjectWrapper<LoadBalancer>> loadBalancerList = SpiUtil.load(LoadBalancer.class);
+        if (!loadBalancerList.isEmpty()) {
+            configuration.setLoadBalancer(loadBalancerList.getFirst().getObj());
+        }
+
+        List<ObjectWrapper<Serializer>> serializerList = SpiUtil.load(Serializer.class);
+        for (ObjectWrapper<Serializer> s : serializerList) {
+            SerializerFactory.addWrapper(s);
+        }
+
+        List<ObjectWrapper<Compressor>> compressorList = SpiUtil.load(Compressor.class);
+        for (ObjectWrapper<Compressor> c : compressorList) {
+            CompressorFactory.addWrapper(c);
         }
     }
 }

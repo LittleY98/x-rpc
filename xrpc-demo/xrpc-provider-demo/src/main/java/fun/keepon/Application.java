@@ -22,7 +22,7 @@ public class Application {
 
         XRpcBootStrap.getInstance()
                 .application("consumer")
-                .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
+//                .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
 //                .registry(new RegistryConfig("zookeeper://debian:2181"))
 //                .serializeType("hessian")
 //                .compressorType("zlib")

@@ -1,0 +1,2 @@
+0-nocompress-fun.keepon.compress.impl.NoCompressor
+1-zlib-fun.keepon.compress.impl.ZlibCompressor
