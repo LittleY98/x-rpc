@@ -103,6 +103,7 @@ public class XRpcBootStrap {
      */
     public XRpcBootStrap protocol(ProtocolConfig protocolConfig){
         log.debug("当前工具使用了 {} 协议进行序列化", protocolConfig);
+
         configuration.setProtocolConfig(protocolConfig);
         return this;
     }

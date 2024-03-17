@@ -24,6 +24,8 @@ public class Configuration {
 
     private RegistryConfig registryConfig =new RegistryConfig("zookeeper://127.0.0.1:2181");
 
+    private Registry registry;
+
     private ProtocolConfig protocolConfig;
 
     private SnowflakeIDGenerator snowflakeIdGenerator = new SnowflakeIDGenerator(1L, 1L);
@@ -40,9 +42,10 @@ public class Configuration {
      */
     private String compress = "zlib";
 
-    private Registry registry;
 
     public Configuration() {
+        SpiResolver.loadFromSpi(this);
+
         YamlResolver.loadFromYaml(this);
     }
 }

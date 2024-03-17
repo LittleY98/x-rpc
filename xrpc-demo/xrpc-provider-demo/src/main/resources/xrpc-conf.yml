@@ -1,5 +1,5 @@
 xrpc:
-  port: 8849
+  port: 8848
   applicationName: xrpc-provider-demo
   serializer: jdk
   compress: zlib
