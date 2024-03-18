@@ -2,18 +2,15 @@ package fun.keepon.proxy.handler;
 
 import fun.keepon.NettyBootStrapInitializer;
 import fun.keepon.XRpcBootStrap;
+import fun.keepon.annotation.RetryRequest;
 import fun.keepon.compress.CompressorFactory;
 import fun.keepon.config.Configuration;
 import fun.keepon.constant.RequestType;
 import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.NetWorkException;
-import fun.keepon.loadbalance.RoundRobinLoadBalancer;
 import fun.keepon.serialize.SerializerFactory;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
-import fun.keepon.utils.SnowflakeIDGenerator;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import lombok.Setter;
@@ -22,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -55,9 +50,70 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
         Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
+        int retryTimes = 0;
+        long sleepTime = 0;
+        long timeout = 3;
+        int flag = 0;
 
+        RetryRequest retryAnnotation = method.getAnnotation(RetryRequest.class);
+        if (retryAnnotation != null) {
+            retryTimes = retryAnnotation.retryTimes();
+            flag = retryTimes;
+            sleepTime = retryAnnotation.sleepTime();
+            timeout = retryAnnotation.timeout();
+        }
+
+        // 封装请求报文
+        Result result = packageRequest( conf, method, args);
+
+        while (true) {
+            try {
+                // 1 拿到服务节点的地址
+                InetSocketAddress addr = conf.getLoadBalancer().selectServiceAddr(interfaceRef.getName());
+
+                // 2 向服务端发起请求，获取结果
+                // 获取Channel
+                Channel ch = getChannel(addr);
+                log.debug("request obj: {}", result.request());
+
+                // 发起请求
+                ch.writeAndFlush(result.request()).addListener(promise -> {
+                    if (!promise.isSuccess()) {
+                        result.retFuture().completeExceptionally(promise.cause());
+                    }
+                });
+
+                // 获取结果
+                return result.retFuture().get(timeout, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                retryTimes--;
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException ex) {
+                    log.error("An exception occurred while retrying. exception: {}", ex.getMessage());
+                }
+                if (retryTimes < 0) {
+                    log.error("When the method [{}] is called remotely, retry {} times, but it still cannot be called, exception: {}", method.getName(), flag, e.getMessage());
+                    break;
+                }
+                log.error("An exception occurred on the {}th retry.exception: {}", flag - retryTimes, e.getMessage());
+            }
+        }
+        throw new RuntimeException("Execute remote method" + method.getName() + " failed");
+    }
+
+
+    private record Result(CompletableFuture<Object> retFuture, XRpcRequest request) {
+    }
+
+    /**
+     * 封装请求报文
+     * @param method 方法
+     * @param args  参数
+     * @return  Result(CompletableFuture<Object> retFuture, XRpcRequest request)
+     */
+    private Result packageRequest(Configuration conf, Method method, Object[] args) {
         // 2.2 封装报文
         CompletableFuture<Object> retFuture = new CompletableFuture<>();
         // 请求标识符
@@ -81,29 +137,9 @@ public class RpcConsumerInvocationHandler<T> implements InvocationHandler {
                 .build();
 
         XRpcBootStrap.REQUEST_THREAD_LOCAL.set(request);
-
-
-        // 1 拿到服务节点的地址
-        InetSocketAddress addr = conf.getLoadBalancer().selectServiceAddr(interfaceRef.getName());
-
-        // 2 向服务端发起请求，获取结果
-        // 2.1 获取Channel
-        Channel ch = getChannel(addr);
-
-
-        log.debug("request obj: {}", request);
-
-
-        // 2.3 发起请求
-        ch.writeAndFlush(request).addListener(promise -> {
-            if (!promise.isSuccess()){
-                retFuture.completeExceptionally(promise.cause());
-            }
-        });
-
-        // 2.4 获取结果
-        return retFuture.get(3, TimeUnit.SECONDS);
+        return new Result(retFuture, request);
     }
+
 
     /**
      * 根据地址获取Channel

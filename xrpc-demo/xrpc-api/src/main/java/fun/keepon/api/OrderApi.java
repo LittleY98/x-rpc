@@ -1,5 +1,7 @@
 package fun.keepon.api;
 
+import fun.keepon.annotation.RetryRequest;
+
 import java.util.List;
 
 /**
@@ -8,5 +10,7 @@ import java.util.List;
  * @description TODO
  */
 public interface OrderApi {
+//    @RetryRequest(retryTimes = 2, sleepTime = 900, timeout = 2000)
+    @RetryRequest
     List<String> listOrder();
 }

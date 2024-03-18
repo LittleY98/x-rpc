@@ -39,7 +39,7 @@ public class Application {
         OrderApi orderApi = orderApiCfg.get();
 
         new Thread(()->{
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 1; i++) {
                 try {
 //                    res = helloXRpc.sayHi("littleY");
                     List<String> res = orderApi.listOrder();

@@ -21,6 +21,12 @@ import java.util.List;
  */
 @Slf4j
 public class SpiLoader {
+
+    /**
+     * 如：
+     * <p>0-nocompress-fun.keepon.compress.impl.NoCompressor</p>
+     * <p>1-zlib-fun.keepon.compress.impl.ZlibCompressor</p>
+     */
     private static final String XRPC_SPI_DIR = "META-INF/xrpc-services/";
     public static final String SPLIT = "-";
 

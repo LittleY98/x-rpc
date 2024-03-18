@@ -2,6 +2,8 @@ package fun.keepon;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * @author LittleY
@@ -25,6 +27,31 @@ public class LCDemo {
 
         return dp[n - 1];
     }
+    public String predictPartyVictory(String senate) {
+        Stack<Character> stack = new Stack<>();
+        LinkedList<Character> q = new LinkedList<>();
+
+        for (int i = 0; i < senate.length(); i++) {
+            char c = senate.charAt(i);
+
+            if(stack.isEmpty() || stack.peek() == c) {
+                stack.push(c);
+                continue;
+            }
+
+            if(stack.peek() != c) {
+                Character peek = stack.peek();
+
+                if (peek == c) {
+                    stack.push(c);
+                    q.offer(stack.pop());
+                }
+            }
+        }
+
+        return q.peek() == 'R' ? "Radiant" : "Dire";
+    }
+
     public static void main(String[] args) {
 
         System.out.println(new LCDemo().rob(new int[]{2,1,1,2}));
