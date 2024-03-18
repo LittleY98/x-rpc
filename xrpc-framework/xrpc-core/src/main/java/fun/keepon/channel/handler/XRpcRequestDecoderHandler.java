@@ -57,6 +57,8 @@ public class XRpcRequestDecoderHandler extends LengthFieldBasedFrameDecoder {
         byte requestType = bytebuf.readByte();
         byte serializeType = bytebuf.readByte();
         byte compressType = bytebuf.readByte();
+        // 占位符，无意义
+        bytebuf.readByte();
         long requestId = bytebuf.readLong();
         log.debug("version: {}, headLength: {}, totalLength: {}, requestType: {}, serializeType: {}, compressType: {}, requestId: {}",
                 version, headLength, totalLength, requestType, serializeType, compressType, requestId);

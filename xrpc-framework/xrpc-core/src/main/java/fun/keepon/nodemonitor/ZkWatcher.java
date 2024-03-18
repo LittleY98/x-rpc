@@ -1,6 +1,5 @@
 package fun.keepon.nodemonitor;
 
-import com.alibaba.fastjson2.JSON;
 import fun.keepon.NettyBootStrapInitializer;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.config.Configuration;
@@ -12,7 +11,6 @@ import org.apache.zookeeper.Watcher;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LittleY
@@ -20,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @description TODO
  */
 @Slf4j
-public class MyWatcher implements Watcher {
+public class ZkWatcher implements Watcher {
     @Override
     public void process(WatchedEvent watchedEvent) {
 

@@ -4,10 +4,16 @@ import com.alibaba.fastjson2.JSON;
 import fun.keepon.discovery.Registry;
 import fun.keepon.loadbalance.LoadBalancer;
 import fun.keepon.loadbalance.RoundRobinLoadBalancer;
+import fun.keepon.protect.RateLimiter;
 import fun.keepon.utils.SnowflakeIDGenerator;
 import fun.keepon.utils.yml.YamlReader;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
+import java.net.InetAddress;
+import java.net.SocketAddress;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author LittleY
@@ -41,6 +47,8 @@ public class Configuration {
      * 压缩器，默认使用zlib
      */
     private String compress = "zlib";
+
+    private Map<SocketAddress, RateLimiter> rateLimiterForIpCache = new ConcurrentHashMap<>();
 
 
     public Configuration() {

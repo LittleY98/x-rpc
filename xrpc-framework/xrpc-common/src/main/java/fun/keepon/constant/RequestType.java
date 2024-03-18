@@ -10,8 +10,14 @@ import lombok.Getter;
  */
 @Getter
 public enum RequestType {
+    /**
+     * 请求
+     */
     REQUEST((byte) 1, "request"),
 
+    /**
+     * 心跳
+     */
     HEART_BEAT((byte)2, "heart_beat");
 
     private byte id;

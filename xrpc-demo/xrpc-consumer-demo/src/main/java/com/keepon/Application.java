@@ -39,7 +39,7 @@ public class Application {
         OrderApi orderApi = orderApiCfg.get();
 
         new Thread(()->{
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 5000; i++) {
                 try {
 //                    res = helloXRpc.sayHi("littleY");
                     List<String> res = orderApi.listOrder();
@@ -50,7 +50,7 @@ public class Application {
                 }
 
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
