@@ -17,17 +17,17 @@ import java.util.List;
 public class SpiResolver {
     public static void loadFromSpi(Configuration configuration) {
 
-        List<ObjectWrapper<LoadBalancer>> loadBalancerList = SpiUtil.load(LoadBalancer.class);
+        List<ObjectWrapper<LoadBalancer>> loadBalancerList = SpiLoader.load(LoadBalancer.class);
         if (!loadBalancerList.isEmpty()) {
             configuration.setLoadBalancer(loadBalancerList.getFirst().getObj());
         }
 
-        List<ObjectWrapper<Serializer>> serializerList = SpiUtil.load(Serializer.class);
+        List<ObjectWrapper<Serializer>> serializerList = SpiLoader.load(Serializer.class);
         for (ObjectWrapper<Serializer> s : serializerList) {
             SerializerFactory.addWrapper(s);
         }
 
-        List<ObjectWrapper<Compressor>> compressorList = SpiUtil.load(Compressor.class);
+        List<ObjectWrapper<Compressor>> compressorList = SpiLoader.load(Compressor.class);
         for (ObjectWrapper<Compressor> c : compressorList) {
             CompressorFactory.addWrapper(c);
         }
