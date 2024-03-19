@@ -34,7 +34,7 @@ public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
         super(MessageFormatConstant.MAX_FRAME_LENGTH,
                 MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2
                 , 4
-                , -(MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2)
+                , -(MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2 + 4)
                 , 0);
     }
 
@@ -54,9 +54,6 @@ public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
     }
 
     private Object decodeFrame(ByteBuf bytebuf) throws IOException {
-
-        log.warn("********** {}", ByteBufUtil.prettyHexDump(bytebuf));
-
         byte[] magic = new byte[MessageFormatConstant.MAGIC_NUMBER.length];
         bytebuf.readBytes(magic);
 

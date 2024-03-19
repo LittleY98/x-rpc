@@ -28,7 +28,7 @@ public class XRpcRequestDecoderHandler extends LengthFieldBasedFrameDecoder {
         super(MessageFormatConstant.MAX_FRAME_LENGTH,
                 MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2
                 , 4
-                , -(MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2)
+                , -(MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2 + 4)
                 , 0);
     }
 
