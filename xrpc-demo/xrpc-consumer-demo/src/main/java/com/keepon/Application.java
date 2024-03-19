@@ -4,7 +4,6 @@ import com.alibaba.fastjson2.JSON;
 import fun.keepon.config.ReferenceConfig;
 import fun.keepon.api.HelloXRpc;
 import fun.keepon.api.OrderApi;
-import fun.keepon.config.RegistryConfig;
 import fun.keepon.XRpcBootStrap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +49,7 @@ public class Application {
                 }
 
                 try {
-                    Thread.sleep(5);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

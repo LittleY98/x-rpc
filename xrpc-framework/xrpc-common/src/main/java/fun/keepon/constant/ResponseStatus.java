@@ -12,7 +12,8 @@ public enum ResponseStatus {
     SUCCESS((byte) 0, "成功"),
     FAIL((byte) 1, "失败"),
     CURRENT_LIMITING_REJECTION((byte)3, "被限流拒绝"),
-    ERROR((byte)4, "服务端出错");
+    ERROR((byte)4, "服务端出错"),
+    PREPARE_SHUTDOWN((byte)5, "服务端准备关闭");
 
     private byte id;
 

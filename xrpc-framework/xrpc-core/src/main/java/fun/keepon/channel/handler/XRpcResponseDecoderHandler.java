@@ -90,25 +90,20 @@ public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
         xRpcResponse.setSerializeType(serializeType);
         xRpcResponse.setCompressType(compressType);
 
-        // 如果是心跳包，直接返回
-        if (requestType == RequestType.HEART_BEAT.getId()){
-            return  xRpcResponse;
-        }
-
-        if (code == ResponseStatus.CURRENT_LIMITING_REJECTION.getId()) {
-            return xRpcResponse;
-        }
 
         byte[] returnVal = new byte[totalLength - MessageFormatConstant.HEAD_LENGTH];
-        bytebuf.readBytes(returnVal);
+        // 如果没有负载信息，则不进行反序列化和解压缩
+        if (returnVal.length > 0) {
+            bytebuf.readBytes(returnVal);
 
-        Serializer serializer = SerializerFactory.getSerializerByCode(serializeType).getObj();
-        Compressor compressor = CompressorFactory.getCompressorByCode(compressType).getObj();
+            Serializer serializer = SerializerFactory.getSerializerByCode(serializeType).getObj();
+            Compressor compressor = CompressorFactory.getCompressorByCode(compressType).getObj();
 
-        byte[] decompress = compressor.decompress(returnVal);
-        Object responseVal = serializer.deserialize(decompress, Object.class);
+            byte[] decompress = compressor.decompress(returnVal);
+            Object responseVal = serializer.deserialize(decompress, Object.class);
 
-        xRpcResponse.setReturnVal(responseVal);
+            xRpcResponse.setReturnVal(responseVal);
+        }
 
         return xRpcResponse;
     }

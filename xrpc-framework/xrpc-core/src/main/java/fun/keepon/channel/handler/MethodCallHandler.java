@@ -9,9 +9,11 @@ import fun.keepon.constant.ResponseStatus;
 import fun.keepon.protect.RateLimiter;
 import fun.keepon.protect.impl.SlidingWindowRateLimiter;
 import fun.keepon.serialize.SerializerFactory;
+import fun.keepon.shutdown.ShutDownAssist;
 import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
 import fun.keepon.transport.message.XRpcResponse;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -33,56 +35,65 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, XRpcRequest msg) throws Exception {
         log.debug("MethodCallHandler: {}", msg);
-        RequestPayLoad payLoad = msg.getRequestPayLoad();
+
+        // 先构造基础的报文
+        XRpcResponse response = buildingBaseResponse(msg);
+
+        // 检查挡板
+        if (ShutDownAssist.BAFFLE.get()) {
+            log.warn("System is about to shut down. Request denied...");
+            response.setCode(ResponseStatus.PREPARE_SHUTDOWN.getId());
+            ctx.channel().writeAndFlush(response);
+            return;
+        }
+
+        // 增加任务计数器
+        ShutDownAssist.EXECUTE_COUNTER.increment();
 
         // 限流器验证
-        if (rateLimiterCheck(ctx, msg)) return;
+        boolean rateLimiterCheck = rateLimiterCheck(ctx.channel());
 
-        // 调用方法拿到结果
-        Object ret = null;
-        if (!(msg.getRequestType() == RequestType.HEART_BEAT.getId())) {
-            ret = callTargetMethod(payLoad);
+        if (!rateLimiterCheck){
+            response.setCode(ResponseStatus.CURRENT_LIMITING_REJECTION.getId());
+        }else if (msg.getRequestType() == RequestType.REQUEST.getId()) {
+            RequestPayLoad payLoad = msg.getRequestPayLoad();
+            Object ret = callTargetMethod(payLoad);
+            response.setCode(ResponseStatus.SUCCESS.getId());
+            response.setReturnVal(ret);
         }
-        // 封装响应报文
-        XRpcResponse response = new XRpcResponse();
-        response.setCode(ResponseStatus.SUCCESS.getId());
-        response.setRequestId(msg.getRequestId());
-        response.setCompressType(CompressorFactory.getCompressorByName(conf.getCompress()).getCode());
-        response.setSerializeType(SerializerFactory.getSerializerByName(conf.getSerializer()).getCode());
-        response.setRequestType(msg.getRequestType());
-        response.setReturnVal(ret);
-
+        ShutDownAssist.EXECUTE_COUNTER.decrement();
         // 发出响应
         ctx.channel().writeAndFlush(response);
     }
 
     /**
+     * 构建基础的报文
+     * @param msg 请求消息体
+     * @return XRpcResponse
+     */
+    private XRpcResponse buildingBaseResponse(XRpcRequest msg) {
+        XRpcResponse response = new XRpcResponse();
+        response.setRequestId(msg.getRequestId());
+        response.setCompressType(CompressorFactory.getCompressorByName(conf.getCompress()).getCode());
+        response.setSerializeType(SerializerFactory.getSerializerByName(conf.getSerializer()).getCode());
+        response.setRequestType(msg.getRequestType());
+
+        return response;
+    }
+
+    /**
      * 限流器验证
-     * @param ctx ChannelHandlerContext
-     * @param msg XRpcRequest
+     * @param channel Channel
      * @return 是否允许通过
      */
-    private boolean rateLimiterCheck(ChannelHandlerContext ctx, XRpcRequest msg) {
-        SocketAddress socketAddress = ctx.channel().remoteAddress();
+    private boolean rateLimiterCheck(Channel channel) {
+        SocketAddress socketAddress = channel.remoteAddress();
         Map<SocketAddress, RateLimiter> cache = conf.getRateLimiterForIpCache();
         if (!cache.containsKey(socketAddress)) {
             cache.put(socketAddress, new SlidingWindowRateLimiter());
         }
-        if (!cache.get(socketAddress).allowRequest()) {
-            log.info("ip: {} The request is too fast and is blocked by the limiter", socketAddress);
 
-            // 封装响应报文
-            XRpcResponse response = new XRpcResponse();
-            response.setRequestId(msg.getRequestId());
-            response.setRequestType(msg.getRequestType());
-            response.setCode(ResponseStatus.CURRENT_LIMITING_REJECTION.getId());
-            response.setCompressType(CompressorFactory.getCompressorByName(conf.getCompress()).getCode());
-            response.setSerializeType(SerializerFactory.getSerializerByName(conf.getSerializer()).getCode());
-            // 发出响应
-            ctx.channel().writeAndFlush(response);
-            return true;
-        }
-        return false;
+        return cache.get(socketAddress).allowRequest();
     }
 
     private Object callTargetMethod(RequestPayLoad payLoad) {

@@ -10,6 +10,7 @@ import fun.keepon.config.ProtocolConfig;
 import fun.keepon.config.ReferenceConfig;
 import fun.keepon.config.ServiceConfig;
 import fun.keepon.config.RegistryConfig;
+import fun.keepon.shutdown.XRpcShutdownHook;
 import fun.keepon.transport.message.XRpcRequest;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -17,7 +18,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.Getter;
@@ -31,6 +31,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -102,20 +103,20 @@ public class XRpcBootStrap {
      * @return this
      */
     public XRpcBootStrap protocol(ProtocolConfig protocolConfig){
-        log.debug("当前工具使用了 {} 协议进行序列化", protocolConfig);
+        log.debug("The tool currently uses the [{}] protocol for serialization", protocolConfig);
 
         configuration.setProtocolConfig(protocolConfig);
         return this;
     }
 
     public XRpcBootStrap serializeType(String  serializeTypeName){
-        log.debug("当前工具使用了 {} 协议进行序列化", serializeTypeName);
+        log.debug("The tool currently uses the [{}] protocol for serialization", serializeTypeName);
         configuration.setSerializer(serializeTypeName);
         return this;
     }
 
     public XRpcBootStrap compressorType(String  compressorTypeName){
-        log.debug("当前工具使用了 {} 协议进行压缩", compressorTypeName);
+        log.debug("The tool currently uses the [{}] protocol for compression", compressorTypeName);
         configuration.setCompress(compressorTypeName);
         return this;
     }
@@ -124,7 +125,7 @@ public class XRpcBootStrap {
      * 启动netty服务
      */
     public void start(){
-        log.info("The service is about to start, and the configuration file is: {}", configuration);
+        log.info("The service is about to start, and the configuration file is: [{}]", configuration);
         new ServerBootstrap()
                 .group(new NioEventLoopGroup(1), new NioEventLoopGroup())
                 .channel(NioServerSocketChannel.class)
@@ -142,6 +143,8 @@ public class XRpcBootStrap {
                         ch.pipeline().addLast(new XRpcResponseEncoderHandler());
                     }
                 }).bind(configuration.getPort());
+
+        Runtime.getRuntime().addShutdownHook(new XRpcShutdownHook());
     }
 
 
@@ -184,9 +187,8 @@ public class XRpcBootStrap {
 
             Object instance = null;
             try {
-                instance = serviceImpl.getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
+                instance = serviceImpl.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 log.error("实例化失败");
                 throw new RuntimeException(e);
             }
