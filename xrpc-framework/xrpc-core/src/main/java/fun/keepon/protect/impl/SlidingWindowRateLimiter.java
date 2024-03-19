@@ -26,6 +26,11 @@ public class SlidingWindowRateLimiter implements RateLimiter {
         this.maxRequest = maxRequest;
     }
 
+    public SlidingWindowRateLimiter() {
+        this.timeWindow = 10;
+        this.maxRequest = 1;
+    }
+
     @Override
     public synchronized boolean allowRequest() {
         // 获取当前时间

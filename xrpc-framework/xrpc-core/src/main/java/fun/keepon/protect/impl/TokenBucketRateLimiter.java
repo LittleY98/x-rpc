@@ -28,6 +28,13 @@ public class TokenBucketRateLimiter implements RateLimiter {
         this.lastRefillTimestamp = System.currentTimeMillis();
     }
 
+    public TokenBucketRateLimiter() {
+        this.maxTokens = 100;
+        this.refillRatePerSecond = 100;
+        this.availableTokens = new AtomicLong(maxTokens);
+        this.lastRefillTimestamp = System.currentTimeMillis();
+    }
+
     /**
      * 填充令牌
      */

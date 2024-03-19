@@ -28,35 +28,15 @@ import java.util.Map;
  */
 @Slf4j
 public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> {
+    Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, XRpcRequest msg) throws Exception {
         log.debug("MethodCallHandler: {}", msg);
         RequestPayLoad payLoad = msg.getRequestPayLoad();
-        Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
-
 
         // 限流器验证
-        // TODO 待完善
-        SocketAddress socketAddress = ctx.channel().remoteAddress();
-        Map<SocketAddress, RateLimiter> cache =
-                conf.getRateLimiterForIpCache();
-        if (!cache.containsKey(socketAddress)) {
-            cache.put(socketAddress, new SlidingWindowRateLimiter(200, 10));
-        }
-        if (!cache.get(socketAddress).allowRequest()) {
-            log.info("ip: {} The request is too fast and is blocked by the limiter", socketAddress);
-
-            // 封装响应报文
-            XRpcResponse response = new XRpcResponse();
-            response.setRequestId(msg.getRequestId());
-            response.setRequestType(msg.getRequestType());
-            response.setCode(ResponseStatus.CURRENT_LIMITING_REJECTION.getId());
-            response.setCompressType(CompressorFactory.getCompressorByName(conf.getCompress()).getCode());
-            response.setSerializeType(SerializerFactory.getSerializerByName(conf.getSerializer()).getCode());
-            // 发出响应
-            ctx.channel().writeAndFlush(response);
-            return;
-        }
+        if (rateLimiterCheck(ctx, msg)) return;
 
         // 调用方法拿到结果
         Object ret = null;
@@ -74,6 +54,35 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> 
 
         // 发出响应
         ctx.channel().writeAndFlush(response);
+    }
+
+    /**
+     * 限流器验证
+     * @param ctx ChannelHandlerContext
+     * @param msg XRpcRequest
+     * @return 是否允许通过
+     */
+    private boolean rateLimiterCheck(ChannelHandlerContext ctx, XRpcRequest msg) {
+        SocketAddress socketAddress = ctx.channel().remoteAddress();
+        Map<SocketAddress, RateLimiter> cache = conf.getRateLimiterForIpCache();
+        if (!cache.containsKey(socketAddress)) {
+            cache.put(socketAddress, new SlidingWindowRateLimiter());
+        }
+        if (!cache.get(socketAddress).allowRequest()) {
+            log.info("ip: {} The request is too fast and is blocked by the limiter", socketAddress);
+
+            // 封装响应报文
+            XRpcResponse response = new XRpcResponse();
+            response.setRequestId(msg.getRequestId());
+            response.setRequestType(msg.getRequestType());
+            response.setCode(ResponseStatus.CURRENT_LIMITING_REJECTION.getId());
+            response.setCompressType(CompressorFactory.getCompressorByName(conf.getCompress()).getCode());
+            response.setSerializeType(SerializerFactory.getSerializerByName(conf.getSerializer()).getCode());
+            // 发出响应
+            ctx.channel().writeAndFlush(response);
+            return true;
+        }
+        return false;
     }
 
     private Object callTargetMethod(RequestPayLoad payLoad) {
