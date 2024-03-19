@@ -34,7 +34,16 @@ public class XRpcRequestDecoderHandler extends LengthFieldBasedFrameDecoder {
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
-        return decodeFrame(in);
+        ByteBuf frame = (ByteBuf) super.decode(ctx, in);
+        if (frame == null) {
+            return null;
+        }
+
+        try {
+            return decodeFrame(frame);
+        } finally {
+            frame.release();
+        }
     }
 
     private Object decodeFrame(ByteBuf bytebuf) throws IOException {

@@ -41,7 +41,7 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> 
         Map<SocketAddress, RateLimiter> cache =
                 conf.getRateLimiterForIpCache();
         if (!cache.containsKey(socketAddress)) {
-            cache.put(socketAddress, new SlidingWindowRateLimiter(2000, 1));
+            cache.put(socketAddress, new SlidingWindowRateLimiter(200, 10));
         }
         if (!cache.get(socketAddress).allowRequest()) {
             log.info("ip: {} The request is too fast and is blocked by the limiter", socketAddress);
