@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2024/2/4
  */
 @Slf4j
-public class MyChannelInboundHandler extends SimpleChannelInboundHandler<XRpcResponse> {
+public class ConsumerChannelInboundHandler extends SimpleChannelInboundHandler<XRpcResponse> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, XRpcResponse msg) {
         byte code = msg.getCode();

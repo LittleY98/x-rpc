@@ -28,7 +28,7 @@ public class SlidingWindowRateLimiter implements RateLimiter {
 
     public SlidingWindowRateLimiter() {
         this.timeWindow = 10;
-        this.maxRequest = 1;
+        this.maxRequest = 10;
     }
 
     @Override

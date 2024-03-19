@@ -1,11 +1,10 @@
 xrpc:
   port: 8852
   applicationName: xrpc-consumer-demo
-  serializer: hessian
-  compress: zlib
-#  loadBalancer: fun.keepon.loadbalance.ConsistentHashLoadBalancer
+  serializer: json
+  compress: nocompress
   registry:
     address: zookeeper://debian:2181
-  snowflakeIdGenerator:
+  snowflakeIdGenerator  :
     workerId: 1
     dataCenterId: 1

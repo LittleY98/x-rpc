@@ -1,9 +1,8 @@
 xrpc:
   port: 8848
   applicationName: xrpc-provider-demo
-  serializer: jdk
-  compress: zlib
-  loadBalancer: fun.keepon.loadbalance.ConsistentHashLoadBalancer
+  serializer: json
+  compress: nocompress
   registry:
     address: zookeeper://debian:2181
   snowflakeIdGenerator:

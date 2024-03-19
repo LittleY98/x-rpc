@@ -1,6 +1,7 @@
 package com.keepon;
 
 import com.alibaba.fastjson2.JSON;
+import fun.keepon.api.DemoApi;
 import fun.keepon.config.ReferenceConfig;
 import fun.keepon.api.HelloXRpc;
 import fun.keepon.api.OrderApi;
@@ -20,6 +21,16 @@ public class Application {
     public static void main(String[] args) throws InterruptedException {
         ReferenceConfig<HelloXRpc> ref = new ReferenceConfig<>();
         ref.setInterface(HelloXRpc.class);
+        HelloXRpc helloXRpc = ref.get();
+
+        ReferenceConfig<OrderApi> orderApiCfg = new ReferenceConfig<>();
+        orderApiCfg.setInterface(OrderApi.class);
+        OrderApi orderApi = orderApiCfg.get();
+
+        ReferenceConfig<DemoApi> demoApiCfg = new ReferenceConfig<>();
+        demoApiCfg.setInterface(DemoApi.class);
+        DemoApi demoApi = demoApiCfg.get();
+
 
         XRpcBootStrap.getInstance()
                 .application("consumer")
@@ -30,19 +41,15 @@ public class Application {
 //                .compressorType("zlib")
                 .reference(ref);
 
-        HelloXRpc helloXRpc = ref.get();
 
-        ReferenceConfig<OrderApi> orderApiCfg = new ReferenceConfig<>();
-        orderApiCfg.setInterface(OrderApi.class);
 
-        OrderApi orderApi = orderApiCfg.get();
 
         new Thread(()->{
             for (int i = 0; i < 5000; i++) {
                 try {
 //                    res = helloXRpc.sayHi("littleY");
                     List<String> res = orderApi.listOrder();
-                    log.info("res: {}", JSON.toJSONString(res));
+                    log.info("res: {}", JSON.toJSONString(demoApi.hello()));
 
                 } catch (Exception e) {
                     log.error("请求出错");
