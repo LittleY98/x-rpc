@@ -1,6 +1,7 @@
 package fun.keepon.compress.impl;
 
 import fun.keepon.compress.Compressor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,39 +13,40 @@ import java.util.zip.Inflater;
  * @description Zlib压缩器
  * @date 2024/2/7
  */
+@Slf4j
 public class ZlibCompressor implements Compressor {
     @Override
     public byte[] compress(byte[] data) {
         byte[] output = new byte[0];
 
-        if (data.length == 0 || data == null) {
+        if (data.length == 0) {
             return output;
         }
 
-        Deflater compresser = new Deflater();
+        Deflater compressor = new Deflater();
 
-        compresser.reset();
-        compresser.setInput(data);
-        compresser.finish();
+        compressor.reset();
+        compressor.setInput(data);
+        compressor.finish();
         ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
         try {
             byte[] buf = new byte[1024];
-            while (!compresser.finished()) {
-                int i = compresser.deflate(buf);
+            while (!compressor.finished()) {
+                int i = compressor.deflate(buf);
                 bos.write(buf, 0, i);
             }
             output = bos.toByteArray();
         } catch (Exception e) {
             output = data;
-            e.printStackTrace();
+            log.error("Zlib compress error", e);
         } finally {
             try {
                 bos.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("bos.close failed", e);
             }
         }
-        compresser.end();
+        compressor.end();
         return output;
     }
 
@@ -52,30 +54,30 @@ public class ZlibCompressor implements Compressor {
     public byte[] decompress(byte[] data) {
         byte[] output = new byte[0];
 
-        Inflater decompresser = new Inflater();
-        decompresser.reset();
-        decompresser.setInput(data);
+        Inflater decompressed = new Inflater();
+        decompressed.reset();
+        decompressed.setInput(data);
 
         ByteArrayOutputStream o = new ByteArrayOutputStream(data.length);
         try {
             byte[] buf = new byte[1024];
-            while (!decompresser.finished()) {
-                int i = decompresser.inflate(buf);
+            while (!decompressed.finished()) {
+                int i = decompressed.inflate(buf);
                 o.write(buf, 0, i);
             }
             output = o.toByteArray();
         } catch (Exception e) {
             output = data;
-            e.printStackTrace();
+            log.error("Zlib decompress error", e);
         } finally {
             try {
                 o.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("o.close failed", e);
             }
         }
 
-        decompresser.end();
+        decompressed.end();
         return output;
     }
 }

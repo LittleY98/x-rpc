@@ -31,8 +31,6 @@ public class JsonSerializer implements Serializer {
             throw new RuntimeException("deserialize parameter invalid");
         }
 
-        T t = JSON.parseObject(bytes, clazz, JSONReader.Feature.SupportClassForName);
-
-        return t;
+        return JSON.parseObject(bytes, clazz, JSONReader.Feature.SupportClassForName);
     }
 }

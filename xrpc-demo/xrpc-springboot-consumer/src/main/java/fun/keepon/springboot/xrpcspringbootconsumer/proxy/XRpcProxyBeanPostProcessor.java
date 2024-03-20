@@ -1,6 +1,7 @@
 package fun.keepon.springboot.xrpcspringbootconsumer.proxy;
 
 import fun.keepon.annotation.XRpcService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
  * @description TODO
  */
 @Component
+@Slf4j
 public class XRpcProxyBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -28,7 +30,7 @@ public class XRpcProxyBeanPostProcessor implements BeanPostProcessor {
                 try {
                     field.set(bean,proxy);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    log.error("Failed to inject proxy object into bean", e);
                 }
             }
         }

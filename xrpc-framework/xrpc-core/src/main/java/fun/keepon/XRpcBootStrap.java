@@ -70,8 +70,9 @@ public class XRpcBootStrap {
 
         if (xRpcBootStrap == null) {
             synchronized (XRpcBootStrap.class) {
-                if (xRpcBootStrap == null)
+                if (xRpcBootStrap == null) {
                     xRpcBootStrap = new XRpcBootStrap();
+                }
             }
         }
         return xRpcBootStrap;
@@ -236,8 +237,7 @@ public class XRpcBootStrap {
                 classes.addAll(findClasses(directory, packageName));
             }
         } catch (IOException e) {
-            log.error("Fail to get class");
-            e.printStackTrace();
+            log.error("Fail to get class", e);
         }
         return classes;
     }
@@ -256,8 +256,7 @@ public class XRpcBootStrap {
                 try {
                     classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
                 } catch (ClassNotFoundException e) {
-                    log.error("Fail to get class");
-                    e.printStackTrace();
+                    log.error("Fail to get class", e);
                 }
             }
         }

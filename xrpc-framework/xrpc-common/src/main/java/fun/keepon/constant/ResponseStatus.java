@@ -15,9 +15,9 @@ public enum ResponseStatus {
     ERROR((byte)4, "服务端出错"),
     PREPARE_SHUTDOWN((byte)5, "服务端准备关闭");
 
-    private byte id;
+    private final byte id;
 
-    private String desc;
+    private final String desc;
 
 
     ResponseStatus(byte id, String desc) {

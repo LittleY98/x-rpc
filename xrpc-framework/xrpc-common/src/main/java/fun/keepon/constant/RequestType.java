@@ -20,9 +20,9 @@ public enum RequestType {
      */
     HEART_BEAT((byte)2, "heart_beat");
 
-    private byte id;
+    private final byte id;
 
-    private String type;
+    private final String type;
 
     RequestType(byte id, String type) {
         this.id = id;

@@ -44,8 +44,7 @@ public class YamlResolver {
             try {
                 configuration.setLoadBalancer((LoadBalancer) Class.forName((String) loadBalancerPath).getDeclaredConstructor().newInstance());
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error("LoadBalancer init failed, use default RoundRobinLoadBalancer");
+                log.error("LoadBalancer init failed, use default RoundRobinLoadBalancer", e);
             }
         }
 

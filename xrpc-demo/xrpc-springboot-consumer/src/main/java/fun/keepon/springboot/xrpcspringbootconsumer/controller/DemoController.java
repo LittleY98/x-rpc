@@ -4,8 +4,6 @@ import com.alibaba.fastjson2.JSON;
 import fun.keepon.annotation.XRpcService;
 import fun.keepon.api.HelloXRpc;
 import fun.keepon.api.OrderApi;
-import fun.keepon.config.ReferenceConfig;
-import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;

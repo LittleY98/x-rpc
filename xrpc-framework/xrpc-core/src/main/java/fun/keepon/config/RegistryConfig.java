@@ -15,6 +15,7 @@ import lombok.Data;
 @Data
 public class RegistryConfig {
 
+    public static final String ZOOKEEPER = "zookeeper";
     // 连接URL 如：zookeeper://127.0.0.1:2181
     private String connectString;
 
@@ -29,7 +30,7 @@ public class RegistryConfig {
     public Registry getRegistry() {
         // 获取注册中心类型
         String registryType = getRegistryType(connectString);
-        if (registryType.equals("zookeeper")) {
+        if (ZOOKEEPER.equals(registryType)) {
             String registryUrl = getRegistryUrl(connectString);
             return new ZookeeperRegistry(registryUrl, ZooKeeperConstant.DEFAULT_ZK_SESSION_TIMEOUT);
         }

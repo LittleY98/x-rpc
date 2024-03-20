@@ -30,7 +30,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 public class HeartBeatDetector {
 
-    private Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
+    private final Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
 
     public void detectHeartbeat(String serviceName){
         List<InetSocketAddress> serviceNodeList = conf.getRegistry().lookUp(serviceName);

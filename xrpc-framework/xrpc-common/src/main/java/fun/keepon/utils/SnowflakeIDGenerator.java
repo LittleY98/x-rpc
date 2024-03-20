@@ -6,13 +6,17 @@ package fun.keepon.utils;
  * @date 2024/2/6
  */
 public class SnowflakeIDGenerator {
-    // 起始的时间戳
-    private final static long START_TIMESTAMP = 1609459200000L; // 2021-01-01 00:00:00
+    // 起始的时间戳, 如：2021-01-01 00:00:00
+    private final static long START_TIMESTAMP = 1609459200000L;
 
     // 每一部分占用的位数
-    private final static long SEQUENCE_BIT = 12; // 序列号占用的位数
-    private final static long MACHINE_BIT = 5;   // 机器标识占用的位数
-    private final static long DATACENTER_BIT = 5;// 数据中心占用的位数
+
+    // 序列号占用的位数
+    private final static long SEQUENCE_BIT = 12;
+    // 机器标识占用的位数
+    private final static long MACHINE_BIT = 5;
+    // 数据中心占用的位数
+    private final static long DATACENTER_BIT = 5;
 
     // 每一部分的最大值
     private final static long MAX_DATACENTER_NUM = ~(-1L << DATACENTER_BIT);
@@ -24,10 +28,17 @@ public class SnowflakeIDGenerator {
     private final static long DATACENTER_LEFT = SEQUENCE_BIT + MACHINE_BIT;
     private final static long TIMESTAMP_LEFT = DATACENTER_LEFT + DATACENTER_BIT;
 
-    private final long datacenterId;  // 数据中心
-    private final long machineId;     // 机器标识
-    private long sequence = 0L; // 序列号
-    private long lastTimestamp = -1L;// 上一次时间戳
+    // 数据中心
+    private final long datacenterId;
+
+    // 机器标识
+    private final long machineId;
+
+    // 序列号
+    private long sequence = 0L;
+
+    // 上一次时间戳
+    private long lastTimestamp = -1L;
 
     public SnowflakeIDGenerator(long datacenterId, long machineId) {
         if (datacenterId > MAX_DATACENTER_NUM || datacenterId < 0) {

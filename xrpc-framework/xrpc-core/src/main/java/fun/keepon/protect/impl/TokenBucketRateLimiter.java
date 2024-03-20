@@ -11,7 +11,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class TokenBucketRateLimiter implements RateLimiter {
     private final long maxTokens;
-    private final long refillRatePerSecond; // 每秒填充的令牌数
+
+    // 每秒填充的令牌数
+    private final long refillRatePerSecond;
     private AtomicLong availableTokens;
     private long lastRefillTimestamp;
     private final ReentrantLock lock = new ReentrantLock();
@@ -64,19 +66,6 @@ public class TokenBucketRateLimiter implements RateLimiter {
             return false;
         } finally {
             lock.unlock();
-        }
-    }
-    public static void main(String[] args) {
-        TokenBucketRateLimiter tokenBuketRateLimiter=new TokenBucketRateLimiter(100,5);
-        for (int i = 0; i < 1000; i++) {
-            try {
-                Thread.sleep(100);
-                boolean allowRequest = tokenBuketRateLimiter.allowRequest();
-                System.out.println("allowRequest--->"+allowRequest);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
         }
     }
 }
