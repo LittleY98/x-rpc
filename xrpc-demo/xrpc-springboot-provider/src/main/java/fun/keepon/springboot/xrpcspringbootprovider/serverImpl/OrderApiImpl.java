@@ -2,11 +2,11 @@ package fun.keepon.springboot.xrpcspringbootprovider.serverImpl;
 
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.annotation.XRpcApi;
-import fun.keepon.annotation.XRpcService;
-import fun.keepon.api.HelloXRpc;
+import fun.keepon.api.OrderApi;
 import fun.keepon.config.Configuration;
 
-import java.util.Date;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author LittleY
@@ -14,15 +14,11 @@ import java.util.Date;
  * @description TODO
  */
 @XRpcApi
-public class HelloImpl implements HelloXRpc {
+public class OrderApiImpl implements OrderApi {
     @Override
-    public String sayHi(String msg) {
+    public List<String> listOrder() {
         Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
-        return "FROM ["  + conf.getApplicationName() +  "]: "+ msg;
-    }
 
-    @Override
-    public Date whatNow() {
-        return new Date();
+        return Arrays.asList(conf.getApplicationName(), "order1", "order2", "order3");
     }
 }

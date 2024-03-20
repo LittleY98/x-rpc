@@ -16,7 +16,6 @@ public class ProviderStart implements CommandLineRunner {
     public void run(String... args) throws Exception {
         System.out.println("即将启动XRPC。。。。。。");
         XRpcBootStrap.getInstance()
-                .application("provider")
                 .scan("fun.keepon.springboot.xrpcspringbootprovider.serverImpl")
                 .start();
     }

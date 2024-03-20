@@ -3,4 +3,4 @@ spring:
     name: spring-provider
 
 server:
-  port: 8888
+  port: 8002

@@ -7,12 +7,10 @@ import java.lang.annotation.Target;
 
 /**
  * @author LittleY
- * @date 2024/3/14
- * @description XRpcApi 用于标记要发布的服务
+ * @date 2024/3/20
+ * @description 用于标记远程代理服务对象
  */
-
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface XRpcApi {
-
+public @interface XRpcService {
 }
