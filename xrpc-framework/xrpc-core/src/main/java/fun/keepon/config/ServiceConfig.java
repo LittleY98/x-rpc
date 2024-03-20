@@ -1,5 +1,6 @@
-package fun.keepon;
+package fun.keepon.config;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import lombok.Setter;
  * @description TODO
  * @date 2024/2/1 22:03
  */
+@Data
 public class ServiceConfig<T> {
     private Class<T> interfaceProvider;
 
@@ -21,19 +23,4 @@ public class ServiceConfig<T> {
         this.interfaceProvider = interfaceProvider;
     }
 
-    public Class<T> getInterfaceProvider() {
-        return interfaceProvider;
-    }
-
-    public void setInterfaceProvider(Class<T> interfaceProvider) {
-        this.interfaceProvider = interfaceProvider;
-    }
-
-    public Object getRef() {
-        return ref;
-    }
-
-    public void setRef(Object ref) {
-        this.ref = ref;
-    }
 }

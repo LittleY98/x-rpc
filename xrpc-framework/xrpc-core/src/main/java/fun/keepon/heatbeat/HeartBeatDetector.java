@@ -3,6 +3,7 @@ package fun.keepon.heatbeat;
 import fun.keepon.NettyBootStrapInitializer;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.compress.CompressorFactory;
+import fun.keepon.config.Configuration;
 import fun.keepon.constant.RequestType;
 import fun.keepon.serialize.SerializerFactory;
 import fun.keepon.transport.message.RequestPayLoad;
@@ -28,8 +29,11 @@ import java.util.concurrent.TimeoutException;
  */
 @Slf4j
 public class HeartBeatDetector {
-    public static void detectHeartbeat(String serviceName){
-        List<InetSocketAddress> serviceNodeList = XRpcBootStrap.getInstance().getRegistry().lookUp(serviceName);
+
+    private Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
+
+    public void detectHeartbeat(String serviceName){
+        List<InetSocketAddress> serviceNodeList = conf.getRegistry().lookUp(serviceName);
 
         for (InetSocketAddress inetSocketAddress : serviceNodeList) {
             if (!XRpcBootStrap.CHANNEL_CACHE.containsKey(inetSocketAddress)) {
@@ -47,7 +51,7 @@ public class HeartBeatDetector {
         new Timer().scheduleAtFixedRate(new HeatBeatTask() ,0, 3000);
     }
 
-    private static class HeatBeatTask extends TimerTask{
+    private class HeatBeatTask extends TimerTask{
         @Override
         public void run() {
             Map<InetSocketAddress, Channel> cache = XRpcBootStrap.CHANNEL_CACHE;
@@ -56,16 +60,16 @@ public class HeartBeatDetector {
 
             for (Map.Entry<InetSocketAddress, Channel> entry : cache.entrySet()) {
                 // 请求标识符
-                long reqId = XRpcBootStrap.snowflakeIdGenerator.nextId();
+                long reqId = conf.getSnowflakeIdGenerator().nextId();
 
                 CompletableFuture<Object> retFuture = new CompletableFuture<>();
                 XRpcBootStrap.PENDING_REQUEST.put(reqId, retFuture);
 
                 XRpcRequest request = XRpcRequest.builder()
                         .requestId(reqId)
-                        .compressType(CompressorFactory.getCompressorByName(XRpcBootStrap.compress).getCode())
+                        .compressType(CompressorFactory.getCompressorByName(conf.getCompress()).getCode())
                         .requestType(RequestType.HEART_BEAT.getId())
-                        .serializeType(SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getCode())
+                        .serializeType(SerializerFactory.getSerializerByName(conf.getSerializer()).getCode())
                         .build();
 
                 XRpcBootStrap.REQUEST_THREAD_LOCAL.set(request);

@@ -1,9 +1,11 @@
 package fun.keepon.channel.handler;
 
+import com.alibaba.fastjson2.JSON;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.compress.Compressor;
 import fun.keepon.compress.CompressorFactory;
 import fun.keepon.constant.RequestType;
+import fun.keepon.constant.ResponseStatus;
 import fun.keepon.serialize.Serializer;
 import fun.keepon.serialize.SerializerFactory;
 import fun.keepon.serialize.impl.JdkSerializer;
@@ -12,6 +14,7 @@ import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
 import fun.keepon.transport.message.XRpcResponse;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
@@ -31,36 +34,52 @@ public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
         super(MessageFormatConstant.MAX_FRAME_LENGTH,
                 MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2
                 , 4
-                , -(MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2)
+                , -(MessageFormatConstant.MAGIC_NUMBER.length + 1 + 2 + 4)
                 , 0);
     }
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
-        return decodeFrame(in);
+
+        ByteBuf frame = (ByteBuf) super.decode(ctx, in);
+        if (frame == null) {
+            return null;
+        }
+
+        try {
+            return decodeFrame(frame);
+        } finally {
+            frame.release();
+        }
     }
 
     private Object decodeFrame(ByteBuf bytebuf) throws IOException {
         byte[] magic = new byte[MessageFormatConstant.MAGIC_NUMBER.length];
         bytebuf.readBytes(magic);
 
+        //  校验魔数
         for (int i = 0; i < magic.length; i++) {
             if (magic[i] != MessageFormatConstant.MAGIC_NUMBER[i]) {
-                throw new RuntimeException("magic number is illegal");
+//                throw new RuntimeException("magic number is illegal");
+                log.error("magic number is illegal: [{}]", JSON.toJSONString(magic));
+                return null;
             }
         }
 
+        // 版本号
         byte version = bytebuf.readByte();
         if (version > MessageFormatConstant.VERSION) {
             throw new RuntimeException("version is illegal");
         }
 
+        // 头长度
         short headLength = bytebuf.readShort();
+        // 总长度
         int totalLength = bytebuf.readInt();
         byte requestType = bytebuf.readByte();
-        byte code = bytebuf.readByte();
         byte serializeType = bytebuf.readByte();
         byte compressType = bytebuf.readByte();
+        byte code = bytebuf.readByte();
         long requestId = bytebuf.readLong();
         log.debug("version: {}, headLength: {}, totalLength: {}, code: {}, serializeType: {}, compressType: {}, requestId: {}",
                 version, headLength, totalLength, code, serializeType, compressType, requestId);
@@ -71,21 +90,20 @@ public class XRpcResponseDecoderHandler extends LengthFieldBasedFrameDecoder {
         xRpcResponse.setSerializeType(serializeType);
         xRpcResponse.setCompressType(compressType);
 
-        // 如果是心跳包，直接返回
-        if (requestType == RequestType.HEART_BEAT.getId()){
-            return  xRpcResponse;
-        }
 
         byte[] returnVal = new byte[totalLength - MessageFormatConstant.HEAD_LENGTH];
-        bytebuf.readBytes(returnVal);
+        // 如果没有负载信息，则不进行反序列化和解压缩
+        if (returnVal.length > 0) {
+            bytebuf.readBytes(returnVal);
 
-        Serializer serializer = SerializerFactory.getSerializerByCode(serializeType).getObj();
-        Compressor compressor = CompressorFactory.getCompressorByCode(compressType).getObj();
+            Serializer serializer = SerializerFactory.getSerializerByCode(serializeType).getObj();
+            Compressor compressor = CompressorFactory.getCompressorByCode(compressType).getObj();
 
-        byte[] decompress = compressor.decompress(returnVal);
-        Object responseVal = serializer.deserialize(decompress, Object.class);
+            byte[] decompress = compressor.decompress(returnVal);
+            Object responseVal = serializer.deserialize(decompress, Object.class);
 
-        xRpcResponse.setReturnVal(responseVal);
+            xRpcResponse.setReturnVal(responseVal);
+        }
 
         return xRpcResponse;
     }

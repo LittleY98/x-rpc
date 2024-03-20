@@ -1,8 +1,8 @@
 package fun.keepon.nodemonitor;
 
-import com.alibaba.fastjson2.JSON;
 import fun.keepon.NettyBootStrapInitializer;
 import fun.keepon.XRpcBootStrap;
+import fun.keepon.config.Configuration;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.WatchedEvent;
@@ -11,7 +11,6 @@ import org.apache.zookeeper.Watcher;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LittleY
@@ -19,9 +18,11 @@ import java.util.concurrent.TimeUnit;
  * @description TODO
  */
 @Slf4j
-public class MyWatcher implements Watcher {
+public class ZkWatcher implements Watcher {
     @Override
     public void process(WatchedEvent watchedEvent) {
+
+        Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
 
         if (watchedEvent.getPath().isBlank() || watchedEvent.getPath() == null) {
             return;
@@ -39,7 +40,7 @@ public class MyWatcher implements Watcher {
 //            XRpcBootStrap.ANSWER_TIME_CHANNEL_CACHE.clear();
 
             // 重新获取对应服务的节点地址
-            List<InetSocketAddress> inetSocketAddresses = XRpcBootStrap.getInstance().getRegistry().lookUp(serviceName);
+            List<InetSocketAddress> inetSocketAddresses = conf.getRegistry().lookUp(serviceName);
 
             // 将新增的，CHANNEL_CACHE中不存在的节点，创建channel并缓存
             for (InetSocketAddress inetSocketAddress : inetSocketAddresses) {
@@ -66,7 +67,7 @@ public class MyWatcher implements Watcher {
             }
 
             // ReBalance
-            XRpcBootStrap.getLoadBalancer().reBalance(serviceName, inetSocketAddresses);
+            conf.getLoadBalancer().reBalance(serviceName, inetSocketAddresses);
         }
     }
 }

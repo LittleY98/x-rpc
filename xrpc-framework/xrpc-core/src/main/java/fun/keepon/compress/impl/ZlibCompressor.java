@@ -17,6 +17,10 @@ public class ZlibCompressor implements Compressor {
     public byte[] compress(byte[] data) {
         byte[] output = new byte[0];
 
+        if (data.length == 0 || data == null) {
+            return output;
+        }
+
         Deflater compresser = new Deflater();
 
         compresser.reset();

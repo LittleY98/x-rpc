@@ -3,7 +3,9 @@ package fun.keepon.channel.handler;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.compress.Compressor;
 import fun.keepon.compress.CompressorFactory;
+import fun.keepon.config.Configuration;
 import fun.keepon.constant.RequestType;
+import fun.keepon.constant.ResponseStatus;
 import fun.keepon.serialize.Serializer;
 import fun.keepon.serialize.SerializerFactory;
 import fun.keepon.serialize.impl.JdkSerializer;
@@ -30,6 +32,8 @@ public class XRpcResponseEncoderHandler extends MessageToByteEncoder<XRpcRespons
     @Override
     protected void encode(ChannelHandlerContext ctx, XRpcResponse msg, ByteBuf out) throws Exception {
 
+        Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
+
         // 魔数
         out.writeBytes(MessageFormatConstant.MAGIC_NUMBER);
 
@@ -40,29 +44,35 @@ public class XRpcResponseEncoderHandler extends MessageToByteEncoder<XRpcRespons
         out.writeShort(MessageFormatConstant.HEAD_LENGTH);
 
         // 总长度
-        Serializer serializer = SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getObj();
-        Compressor compressor = CompressorFactory.getCompressorByName(XRpcBootStrap.compress).getObj();
+        Serializer serializer = SerializerFactory.getSerializerByName(conf.getSerializer()).getObj();
+        Compressor compressor = CompressorFactory.getCompressorByName(conf.getCompress()).getObj();
 
-        byte[] serialize = serializer.serialize(msg.getReturnVal());
-        byte[] payloadBytes = compressor.compress(serialize);
 
-        out.writeInt(payloadBytes.length + MessageFormatConstant.HEAD_LENGTH);
+        int payLoadLen = 0;
+        byte[] payloadBytes = new byte[1];
+        if (msg.getCode() != ResponseStatus.CURRENT_LIMITING_REJECTION.getId()){
+            byte[] serialize = serializer.serialize(msg.getReturnVal());
+            payloadBytes = compressor.compress(serialize);
+            payLoadLen = payloadBytes.length;
+        }
+        out.writeInt(payLoadLen + MessageFormatConstant.HEAD_LENGTH);
 
 //        TODO 请求类型
         out.writeByte(msg.getRequestType());
-        out.writeByte(msg.getCode());
 
         // 序列化类型
-        out.writeByte(SerializerFactory.getSerializerByName(XRpcBootStrap.serializer).getCode());
+        out.writeByte(SerializerFactory.getSerializerByName(conf.getSerializer()).getCode());
 
         //压缩类型
         out.writeByte(msg.getCompressType());
+
+        out.writeByte(msg.getCode());
 
         //请求ID
         out.writeLong(msg.getRequestId());
 
         //请求负载数据
-        if (msg.getRequestType() != RequestType.HEART_BEAT.getId()){
+        if (msg.getRequestType() != RequestType.HEART_BEAT.getId() && msg.getCode() != ResponseStatus.CURRENT_LIMITING_REJECTION.getId()){
             out.writeBytes(payloadBytes);
         }
     }

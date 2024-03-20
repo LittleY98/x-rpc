@@ -1,12 +1,12 @@
 package fun.keepon.discovery.impl;
 
-import fun.keepon.ServiceConfig;
+import fun.keepon.config.ServiceConfig;
 import fun.keepon.XRpcBootStrap;
 import fun.keepon.constant.ZooKeeperConstant;
 import fun.keepon.discovery.AbstractRegistry;
 import fun.keepon.discovery.Registry;
 import fun.keepon.exceptions.DiscoveryException;
-import fun.keepon.nodemonitor.MyWatcher;
+import fun.keepon.nodemonitor.ZkWatcher;
 import fun.keepon.utils.NetUtils;
 import fun.keepon.utils.zk.ZkNode;
 import fun.keepon.utils.zk.ZookeeperUtil;
@@ -16,7 +16,6 @@ import org.apache.zookeeper.CreateMode;
 
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author LittleY
@@ -41,16 +40,16 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
         String serviceNamePath = ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + serviceConfig.getInterface().getName();
         ZookeeperUtil.createNode(zookeeperClient, new ZkNode(serviceNamePath, null));
 
-        String nodePath = serviceNamePath + "/" + NetUtils.getLocalIP() + ":" + XRpcBootStrap.PORT;
+        String nodePath = serviceNamePath + "/" + NetUtils.getLocalIP() + ":" + XRpcBootStrap.getInstance().getConfiguration().getPort();
         ZookeeperUtil.createNode(zookeeperClient, new ZkNode(nodePath, null), CreateMode.EPHEMERAL);
 
-        log.debug("服务： {}， 已经被注册", serviceConfig.getInterface().getName());
+        log.debug("节点 {} 已添加", nodePath);
     }
 
     @Override
     public List<InetSocketAddress> lookUp(String name) {
 
-        List<String> children = ZookeeperUtil.getChildren(zookeeperClient, ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + name, new MyWatcher());
+        List<String> children = ZookeeperUtil.getChildren(zookeeperClient, ZooKeeperConstant.BASE_PROVIDERS_PATH + "/" + name, new ZkWatcher());
 
         log.info("children: {}", children);
 

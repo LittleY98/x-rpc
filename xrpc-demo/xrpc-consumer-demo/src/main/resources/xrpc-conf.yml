@@ -1,0 +1,10 @@
+xrpc:
+  port: 8852
+  applicationName: xrpc-consumer-demo
+  serializer: json
+  compress: nocompress
+  registry:
+    address: zookeeper://127.0.0.1:2181
+  snowflakeIdGenerator:
+    workerId: 1
+    dataCenterId: 1

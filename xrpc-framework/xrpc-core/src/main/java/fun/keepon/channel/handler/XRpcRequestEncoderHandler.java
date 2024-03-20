@@ -55,6 +55,9 @@ public class XRpcRequestEncoderHandler extends MessageToByteEncoder<XRpcRequest>
         //压缩类型
         out.writeByte(msg.getCompressType());
 
+        // 占位符
+        out.writeByte((byte)0);
+
         //请求ID
         out.writeLong(msg.getRequestId());
 

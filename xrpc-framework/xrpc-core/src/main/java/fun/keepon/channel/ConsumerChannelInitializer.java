@@ -1,6 +1,6 @@
 package fun.keepon.channel;
 
-import fun.keepon.channel.handler.MyChannelInboundHandler;
+import fun.keepon.channel.handler.ConsumerChannelInboundHandler;
 import fun.keepon.channel.handler.XRpcRequestEncoderHandler;
 import fun.keepon.channel.handler.XRpcResponseDecoderHandler;
 import io.netty.channel.Channel;
@@ -15,7 +15,7 @@ import io.netty.handler.logging.LoggingHandler;
  * @date 2024/2/4
  */
 @ChannelHandler.Sharable
-public class MyChannelInitializer extends ChannelInitializer {
+public class ConsumerChannelInitializer extends ChannelInitializer {
     private final LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
     @Override
     protected void initChannel(Channel ch){
@@ -23,7 +23,7 @@ public class MyChannelInitializer extends ChannelInitializer {
 
         //入站处理器
         ch.pipeline().addLast(new XRpcResponseDecoderHandler());
-        ch.pipeline().addLast(new MyChannelInboundHandler());
+        ch.pipeline().addLast(new ConsumerChannelInboundHandler());
 
         //出站处理器
         ch.pipeline().addLast(new XRpcRequestEncoderHandler());
