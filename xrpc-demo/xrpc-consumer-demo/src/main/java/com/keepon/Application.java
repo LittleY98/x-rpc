@@ -47,19 +47,19 @@ public class Application {
         new Thread(()->{
             for (int i = 0; i < 5000; i++) {
                 try {
-//                    res = helloXRpc.sayHi("littleY");
-                    List<String> res = orderApi.listOrder();
-                    log.info("res: {}", JSON.toJSONString(demoApi.hello()));
+                    String res = helloXRpc.sayHi("littleY");
+//                    List<String> res = orderApi.listOrder();
+                    log.info("res: {}", JSON.toJSONString(res));
 
                 } catch (Exception e) {
                     log.error("请求出错");
                 }
 
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
             }
         }).start();
 

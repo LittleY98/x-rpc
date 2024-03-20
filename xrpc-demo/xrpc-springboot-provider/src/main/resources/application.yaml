@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: spring-provider
+
+server:
+  port: 8888
