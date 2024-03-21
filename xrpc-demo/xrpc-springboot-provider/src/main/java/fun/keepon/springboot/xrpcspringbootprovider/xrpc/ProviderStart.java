@@ -1,22 +1,21 @@
 package fun.keepon.springboot.xrpcspringbootprovider.xrpc;
 
 import fun.keepon.XRpcBootStrap;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author LittleY
- * @date 2024/3/20
+ * @date 2024/3/21
  * @description TODO
  */
-@Component
+@Configuration
 public class ProviderStart implements CommandLineRunner {
+
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("即将启动XRPC。。。。。。");
         XRpcBootStrap.getInstance()
-                .scan("fun.keepon.springboot.xrpcspringbootprovider.serverImpl")
+                .scan("fun.keepon.springboot.xrpcspringbootprovider.serviceImpl")
                 .start();
     }
 }

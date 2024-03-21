@@ -1,7 +1,7 @@
 xrpc:
   port: 8849
   applicationName: xrpc-consumer-demo
-  serializer: jdk
+  serializer: kyro
   compress: zlib
   registry:
     address: zookeeper://127.0.0.1:2181

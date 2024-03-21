@@ -27,6 +27,12 @@
 
         <dependency>
             <groupId>fun.keepon</groupId>
+            <artifactId>kyro-serializer</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>fun.keepon</groupId>
             <artifactId>xrpc-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
