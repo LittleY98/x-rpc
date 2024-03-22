@@ -174,6 +174,19 @@ public class XRpcBootStrap {
         return this;
     }
 
+
+    /**
+     * 配置端口
+     * @param port 端口
+     * @return XRpcBootStrap
+     */
+    public XRpcBootStrap port(Integer port){
+        configuration.setPort(port);
+
+        return this;
+    }
+
+
     public XRpcBootStrap scan(String packageName){
         // 获取包下的所有类
         List<Class> classList = getClassList(packageName);
