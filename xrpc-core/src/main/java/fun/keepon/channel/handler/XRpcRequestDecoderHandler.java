@@ -13,13 +13,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description 请求解码器
  * @date 2024/2/5
  */
 @Slf4j
@@ -46,7 +44,7 @@ public class XRpcRequestDecoderHandler extends LengthFieldBasedFrameDecoder {
         }
     }
 
-    private Object decodeFrame(ByteBuf bytebuf) throws IOException {
+    private Object decodeFrame(ByteBuf bytebuf) {
         byte[] magic = new byte[MessageFormatConstant.MAGIC_NUMBER.length];
         bytebuf.readBytes(magic);
 

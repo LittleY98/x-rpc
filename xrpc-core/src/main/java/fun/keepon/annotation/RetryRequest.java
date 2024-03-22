@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * @author LittleY
  * @date 2024/3/18
- * @description TODO
+ * @description 请求重试
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

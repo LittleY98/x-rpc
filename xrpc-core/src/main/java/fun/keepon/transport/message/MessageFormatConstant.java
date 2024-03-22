@@ -2,7 +2,7 @@ package fun.keepon.transport.message;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description 消息格式常量
  * @date 2024/2/5
  */
 public class MessageFormatConstant {

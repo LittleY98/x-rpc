@@ -3,7 +3,7 @@ package fun.keepon.protect;
 /**
  * @author LittleY
  * @date 2024/3/18
- * @description TODO
+ * @description 限流器接口
  */
 public interface RateLimiter {
 

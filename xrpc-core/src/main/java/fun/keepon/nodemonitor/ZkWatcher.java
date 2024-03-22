@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * @author LittleY
  * @date 2024/3/12
- * @description TODO
+ * @description Zookeeper watcher
  */
 @Slf4j
 public class ZkWatcher implements Watcher {
@@ -47,6 +47,7 @@ public class ZkWatcher implements Watcher {
                 if (!XRpcBootStrap.CHANNEL_CACHE.containsKey(inetSocketAddress)) {
                     try {
                         // TODO 后续待解决：有新节点上线时，注册到zookeeper之后立马开始获取channel，但此时新结点的netty服务还没启动
+                        // TODO 在集成Spring中时，可以通过Spring的生命周期回调方法来解决
                         Thread.sleep(800);
                         Channel channel = NettyBootStrapInitializer.getBootstrap().connect(inetSocketAddress).sync().channel();
                         XRpcBootStrap.CHANNEL_CACHE.put(inetSocketAddress, channel);

@@ -8,10 +8,7 @@ import fun.keepon.constant.RequestType;
 import fun.keepon.constant.ResponseStatus;
 import fun.keepon.serialize.Serializer;
 import fun.keepon.serialize.SerializerFactory;
-import fun.keepon.serialize.impl.JdkSerializer;
 import fun.keepon.transport.message.MessageFormatConstant;
-import fun.keepon.transport.message.RequestPayLoad;
-import fun.keepon.transport.message.XRpcRequest;
 import fun.keepon.transport.message.XRpcResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,7 +21,7 @@ import java.io.ObjectOutputStream;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description XRpcResponse编码器
  * @date 2024/2/5
  */
 @Slf4j
@@ -57,7 +54,7 @@ public class XRpcResponseEncoderHandler extends MessageToByteEncoder<XRpcRespons
         }
         out.writeInt(payLoadLen + MessageFormatConstant.HEAD_LENGTH);
 
-//        TODO 请求类型
+        // 请求类型
         out.writeByte(msg.getRequestType());
 
         // 序列化类型

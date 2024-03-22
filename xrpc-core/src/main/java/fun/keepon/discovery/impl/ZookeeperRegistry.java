@@ -19,13 +19,13 @@ import java.util.List;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description 基于Zookeeper的服务注册与发现
  * @date 2024/2/3
  */
 @Slf4j
 public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 
-    private CuratorFramework zookeeperClient;
+    private final CuratorFramework zookeeperClient;
 
     public ZookeeperRegistry() {
         this.zookeeperClient = ZookeeperUtil.getClient();

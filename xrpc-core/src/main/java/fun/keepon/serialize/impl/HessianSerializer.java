@@ -1,17 +1,17 @@
 package fun.keepon.serialize.impl;
 
-import com.alibaba.fastjson2.JSON;
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
 import fun.keepon.serialize.Serializer;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
-import java.util.Date;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description Hessian序列化
  * @date 2024/2/6
  */
 @Slf4j
@@ -43,7 +43,7 @@ public class HessianSerializer implements Serializer {
             throw new RuntimeException("deserialize parameter invalid");
         }
 
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);){
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)){
             HessianInput in = new HessianInput(bis);
             return (T) in.readObject(clazz);
         } catch (Exception e) {

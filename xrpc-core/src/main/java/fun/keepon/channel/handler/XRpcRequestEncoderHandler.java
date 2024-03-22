@@ -19,13 +19,13 @@ import java.io.ObjectOutputStream;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description XRpcRequest编码器
  * @date 2024/2/5
  */
 @Slf4j
 public class XRpcRequestEncoderHandler extends MessageToByteEncoder<XRpcRequest> {
     @Override
-    protected void encode(ChannelHandlerContext ctx, XRpcRequest msg, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, XRpcRequest msg, ByteBuf out) {
 
         // 魔数
         out.writeBytes(MessageFormatConstant.MAGIC_NUMBER);

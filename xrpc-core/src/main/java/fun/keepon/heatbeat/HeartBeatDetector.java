@@ -6,13 +6,11 @@ import fun.keepon.compress.CompressorFactory;
 import fun.keepon.config.Configuration;
 import fun.keepon.constant.RequestType;
 import fun.keepon.serialize.SerializerFactory;
-import fun.keepon.transport.message.RequestPayLoad;
 import fun.keepon.transport.message.XRpcRequest;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -25,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author LittleY
  * @date 2024/3/8
- * @description 心跳检测器
+ * @description TODO 心跳检测器 暂时搁置
  */
 @Slf4j
 public class HeartBeatDetector {

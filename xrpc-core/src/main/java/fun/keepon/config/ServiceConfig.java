@@ -1,12 +1,10 @@
 package fun.keepon.config;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description 服务配置
  * @date 2024/2/1 22:03
  */
 @Data

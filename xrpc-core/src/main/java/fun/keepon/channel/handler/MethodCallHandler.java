@@ -25,7 +25,7 @@ import java.util.Map;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description 方法调用处理器
  * @date 2024/2/5
  */
 @Slf4j
@@ -33,7 +33,7 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<XRpcRequest> 
     Configuration conf = XRpcBootStrap.getInstance().getConfiguration();
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, XRpcRequest msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, XRpcRequest msg) {
         log.debug("MethodCallHandler: {}", msg);
 
         // 先构造基础的报文

@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description ConsumerChannelInboundHandler
  * @date 2024/2/4
  */
 @Slf4j
@@ -31,7 +31,7 @@ public class ConsumerChannelInboundHandler extends SimpleChannelInboundHandler<X
             XRpcBootStrap.CHANNEL_CACHE.remove(ctx.channel().remoteAddress());
 
             // TODO 找到负载均衡器进行reloadBalance 重新进行负载均衡
-            LoadBalancer loadBalancer = XRpcBootStrap.getInstance().getConfiguration().getLoadBalancer();
+//            LoadBalancer loadBalancer = XRpcBootStrap.getInstance().getConfiguration().getLoadBalancer();
 
             throw new ResponseException(ResponseStatus.PREPARE_SHUTDOWN.getDesc());
         }else if (code == ResponseStatus.SUCCESS.getId()){

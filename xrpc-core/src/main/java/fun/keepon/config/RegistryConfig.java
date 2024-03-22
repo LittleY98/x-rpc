@@ -9,7 +9,7 @@ import lombok.Data;
 
 /**
  * @author LittleY
- * @description TODO
+ * @description 注册中心配置
  * @date 2024/2/1 20:52
  */
 @Data
@@ -25,7 +25,7 @@ public class RegistryConfig {
 
     /**
      * 获取注册中心
-     * @return
+     * @return Registry
      */
     public Registry getRegistry() {
         // 获取注册中心类型
