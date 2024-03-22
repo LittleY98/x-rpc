@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fun.keepon</groupId>
     <artifactId>xrpc-framework</artifactId>
-    <version>1.0.0-beta</version>
+    <version>1.0.0-dev</version>
     <packaging>pom</packaging>
 
     <modules>

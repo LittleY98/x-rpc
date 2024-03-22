@@ -6,7 +6,7 @@
     <parent>
         <groupId>fun.keepon</groupId>
         <artifactId>xrpc-framework</artifactId>
-        <version>1.0.0-beta</version>
+        <version>1.0.0-dev</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
