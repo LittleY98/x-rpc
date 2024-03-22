@@ -18,34 +18,33 @@ xRPC 是一个开源项目，旨在创建一个轻量级和高性能的 Java RPC
 
 ## 使用说明
 
-#### Quick Start
+### Quick Start
 
 1. 服务提供者
     ```java
-         public class Application {
-            public static void main(String[] args) {
-        
-                ServiceConfig<HelloXRpc> service = new ServiceConfig<>();
-                service.setInterface(HelloXRpc.class);
-                service.setRef(new HelloXRpcImpl());
-        
-                ServiceConfig<DemoApi> demoService = new ServiceConfig<>();
-                demoService.setInterface(DemoApi.class);
-                demoService.setRef(new DemoApiImpl());
-        
-                XRpcBootStrap.getInstance()
-                        .application("consumer")
-                        .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
-                        .serializeType("hessian")
-                        .compressorType("zlib")
-                        .publish(service)
-                        .publish(demoService)
-                        .scan("your.api.package")
-                        .port(8848)
-                        .start();
-            }
-        
-        }
+      public class Application {
+         public static void main(String[] args) {
+     
+             ServiceConfig<HelloXRpc> service = new ServiceConfig<>();
+             service.setInterface(HelloXRpc.class);
+             service.setRef(new HelloXRpcImpl());
+     
+             ServiceConfig<DemoApi> demoService = new ServiceConfig<>();
+             demoService.setInterface(DemoApi.class);
+             demoService.setRef(new DemoApiImpl());
+     
+             XRpcBootStrap.getInstance()
+                     .application("consumer")
+                     .registry(new RegistryConfig("zookeeper://127.0.0.1:2181"))
+                     .serializeType("hessian")
+                     .compressorType("zlib")
+                     .publish(service)
+                     .publish(demoService)
+                     .scan("your.api.package")
+                     .port(8848)
+                     .start();
+         }
+     }
    ```
 
 2. 服务消费者
@@ -77,3 +76,9 @@ xRPC 是一个开源项目，旨在创建一个轻量级和高性能的 Java RPC
         }
    }
     ```
+
+### 详细文档
+后续有空补上
+
+## 贡献
+欢迎任何形式的贡献，无论是新功能的建议、代码的提交或是发现并报告BUG。
