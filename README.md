@@ -19,8 +19,16 @@ xRPC 是一个开源项目，旨在创建一个轻量级和高性能的 Java RPC
 ## 3. 使用说明
 
 ### 3.1 Quick Start
+1. 引入依赖
+    ```xml
+        <dependency>
+            <groupId>fun.keepon</groupId>
+            <artifactId>xrpc-core</artifactId>
+            <version>1.0.0-dev</version>
+        </dependency>
+    ```
 
-1. 服务提供者
+2. 服务提供者
     ```java
       public class Application {
          public static void main(String[] args) {
@@ -47,7 +55,7 @@ xRPC 是一个开源项目，旨在创建一个轻量级和高性能的 Java RPC
      }
    ```
 
-2. 服务消费者
+3. 服务消费者
     ```java
     @Slf4j
     public class Application {
